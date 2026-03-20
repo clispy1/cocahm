@@ -1,0 +1,207 @@
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { motion, AnimatePresence } from 'motion/react';
+import { 
+  Menu, X, MapPin, Phone, Mail, Instagram, Facebook, Twitter 
+} from 'lucide-react';
+import { SCHOOL_NAME } from '@/constants';
+
+export const Navbar = () => {
+  const pathname = usePathname();
+  const isHome = pathname === '/';
+  const [isScrolled, setIsScrolled] = useState(!isHome);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isHome) {
+      setIsScrolled(true);
+      return;
+    }
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isHome]);
+
+  const navLinks = [
+    { name: 'Home', href: '/' },
+    { name: 'About', href: '/about' },
+    { name: 'Courses', href: '/courses' },
+    { name: 'Student Life', href: '/student-life' },
+    { name: 'Events', href: '/events' },
+    { name: 'Contact', href: '/contact' },
+  ];
+
+  return (
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-6'}`}>
+      <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+        <Link href="/" className="flex items-center gap-2">
+          <div 
+            className={`h-10 w-48 ${isScrolled ? 'bg-brand-primary' : 'bg-white'}`}
+            style={{ 
+              WebkitMaskImage: `url('/logo-w.svg')`, 
+              WebkitMaskRepeat: 'no-repeat', 
+              WebkitMaskSize: 'contain',
+              WebkitMaskPosition: 'left center',
+              maskImage: `url('/logo-w.svg')`,
+              maskRepeat: 'no-repeat',
+              maskSize: 'contain',
+              maskPosition: 'left center'
+            }} 
+            aria-label={SCHOOL_NAME}
+          />
+        </Link>
+
+        {/* Desktop Nav */}
+        <div className="hidden md:flex items-center gap-8">
+          {navLinks.map((link) => (
+            <Link 
+              key={link.name} 
+              href={link.href} 
+              className={`text-sm font-medium transition-colors hover:text-brand-primary ${isScrolled ? 'text-gray-600' : 'text-white/90'}`}
+            >
+              {link.name}
+            </Link>
+          ))}
+          <Link href="/enroll" className="bg-brand-primary text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-opacity-90 transition-all">
+            Enroll Now
+          </Link>
+        </div>
+
+        {/* Mobile Menu Toggle */}
+        <button 
+          className="md:hidden text-white"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          {isMobileMenuOpen ? <X className={isScrolled ? 'text-gray-900' : 'text-white'} /> : <Menu className={isScrolled ? 'text-gray-900' : 'text-white'} />}
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="absolute top-full left-0 right-0 bg-white shadow-xl p-6 md:hidden"
+          >
+            <div className="flex flex-col gap-4">
+              {navLinks.map((link) => (
+                <Link 
+                  key={link.name} 
+                  href={link.href} 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-gray-600 font-medium hover:text-brand-primary"
+                >
+                  {link.name}
+                </Link>
+              ))}
+              <Link href="/enroll" onClick={() => setIsMobileMenuOpen(false)} className="bg-brand-primary text-white px-6 py-3 rounded-full font-medium w-full text-center">
+                Enroll Now
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
+  );
+};
+
+export const Footer = () => {
+  return (
+    <footer className="bg-gray-950 text-white pt-24 pb-12 px-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
+          <div className="lg:col-span-1">
+            <div className="flex items-center gap-2 mb-8">
+              <div 
+                className="h-12 w-56 bg-white"
+                style={{ 
+                  WebkitMaskImage: `url('/logo-w.svg')`, 
+                  WebkitMaskRepeat: 'no-repeat', 
+                  WebkitMaskSize: 'contain',
+                  WebkitMaskPosition: 'left center',
+                  maskImage: `url('/logo-w.svg')`,
+                  maskRepeat: 'no-repeat',
+                  maskSize: 'contain',
+                  maskPosition: 'left center'
+                }} 
+                aria-label={SCHOOL_NAME}
+              />
+            </div>
+            <p className="text-gray-400 text-sm leading-relaxed mb-8">
+              Empowering the next generation of culinary leaders through professional training, industry expertise, and a passion for excellence.
+            </p>
+            <div className="flex gap-4">
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-brand-primary transition-colors">
+                <Instagram className="w-5 h-5" />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-brand-primary transition-colors">
+                <Facebook className="w-5 h-5" />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-brand-primary transition-colors">
+                <Twitter className="w-5 h-5" />
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-serif font-bold text-xl mb-8">Quick Links</h4>
+            <ul className="space-y-4 text-gray-400 text-sm">
+              <li><Link href="/about" className="hover:text-white transition-colors">About CoCAHM</Link></li>
+              <li><Link href="/courses" className="hover:text-white transition-colors">Our Courses</Link></li>
+              <li><Link href="/events" className="hover:text-white transition-colors">Events</Link></li>
+              <li><Link href="/student-life" className="hover:text-white transition-colors">Student Life</Link></li>
+              <li><Link href="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
+              <li><Link href="/enroll" className="hover:text-white transition-colors">Admissions</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-serif font-bold text-xl mb-8">Contact Us</h4>
+            <ul className="space-y-6 text-gray-400 text-sm">
+              <li className="flex gap-4">
+                <MapPin className="w-5 h-5 text-brand-primary shrink-0" />
+                <span>Abavana Junction, Towards Maamobi Hospital</span>
+              </li>
+              <li className="flex gap-4">
+                <Phone className="w-5 h-5 text-brand-primary shrink-0" />
+                <span>+233 (0)24 286 9439<br/>024 370 8575<br/>050 230 0165</span>
+              </li>
+              <li className="flex gap-4">
+                <Mail className="w-5 h-5 text-brand-primary shrink-0" />
+                <span>info@cocahm.com</span>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-serif font-bold text-xl mb-8">Newsletter</h4>
+            <p className="text-gray-400 text-sm mb-6">Subscribe to get the latest culinary tips and school updates.</p>
+            <form className="flex gap-2">
+              <input 
+                type="email" 
+                placeholder="Your email" 
+                className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm w-full focus:outline-none focus:border-brand-primary transition-colors"
+              />
+              <button type="button" className="bg-brand-primary px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all">
+                Join
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-gray-500 uppercase tracking-widest">
+          <p>© 2026 {SCHOOL_NAME}. All Rights Reserved.</p>
+          <div className="flex gap-8">
+            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};

@@ -53,7 +53,7 @@ export default function About() {
       <section className="relative px-6 py-20 md:py-32 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?q=80&w=2000&auto=format&fit=crop" 
+            src="/3_233174e60172ae64f15528d5df5907228b366a39-6426x4284.jpg" 
             alt="Chefs cooking in a professional kitchen" 
             className="w-full h-full object-cover opacity-20"
           />

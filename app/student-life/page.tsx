@@ -139,6 +139,20 @@ export default function StudentLife() {
         <div className="mb-16">
           <h2 className="text-3xl font-serif font-bold text-center mb-12 text-gray-950">Campus Gallery</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="md:col-span-2 md:row-span-2 relative overflow-hidden rounded-2xl group bg-gray-100"
+            >
+              <img 
+                src="/6_556a25cfb5d4c1a0c5fa5912deb0c5f70f622d3b-3975x5963.jpg" 
+                alt="Student Life Featured" 
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </motion.div>
             {GALLERY_IMAGES.map((img, index) => (
               <motion.div
                 key={index}

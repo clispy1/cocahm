@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ChevronLeft, ChevronDown, CheckCircle2 } from 'lucide-react';
 import { COURSE_CATEGORIES } from '@/constants';
+import { motion, AnimatePresence } from 'motion/react';
 
 function EnrollmentForm() {
   const searchParams = useSearchParams();
+  const [currentStep, setCurrentStep] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedCourse, setSelectedCourse] = useState('');
 
@@ -16,15 +18,36 @@ function EnrollmentForm() {
   const [hasDisability, setHasDisability] = useState<boolean | null>(null);
   const [hasAllergy, setHasAllergy] = useState<boolean | null>(null);
 
+  // FAQ State
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+
   useEffect(() => {
     window.scrollTo(0, 0);
     const categoryParam = searchParams.get('category');
     if (categoryParam) {
       setSelectedCategory(categoryParam);
+      setCurrentStep(2); // Jump to course selection if category is pre-filled
     }
   }, [searchParams]);
 
   const activeCategory = COURSE_CATEGORIES.find(c => c.id === selectedCategory);
+
+  const nextStep = () => {
+    setCurrentStep(prev => Math.min(prev + 1, 3));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
+  const prevStep = () => {
+    setCurrentStep(prev => Math.max(prev - 1, 1));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const faqs = [
+    { q: "Do I need prior culinary experience to enroll?", a: "Not at all! Our programs cater to all levels, from absolute beginners to experienced cooks looking to refine their skills and gain certification." },
+    { q: "Are there payment plans available?", a: "Yes, we offer flexible installment plans for our diploma and long-term certificate courses. Please contact the admissions office for a customized payment schedule." },
+    { q: "What equipment do I need to buy?", a: "Students are required to purchase a CoCAHM uniform and a basic knife set. A detailed equipment list will be provided upon acceptance into the program." },
+    { q: "Is the City & Guilds certification recognized globally?", a: "Absolutely. City & Guilds is a globally recognized awarding body, and your certification will open doors in kitchens and hotels worldwide." }
+  ];
 
   return (
     <div className="pt-32 pb-24 px-6 min-h-screen bg-brand-bg">
@@ -37,288 +60,343 @@ function EnrollmentForm() {
           </p>
         </div>
 
-        <div
-          className="bg-white rounded-3xl shadow-xl p-8 md:p-12"
-        >
-          <form className="space-y-12">
-            {/* 1. Personal Details */}
-            <section>
-              <h3 className="text-xl font-serif font-bold mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-                <span className="bg-brand-primary text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
-                Personal Details
-              </h3>
-              <div className="grid md:grid-cols-3 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Surname</label>
-                  <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                  <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Other Names</label>
-                  <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
-                  <input type="date" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Place of Birth</label>
-                  <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
-                  <select className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all bg-white">
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Nationality</label>
-                  <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                  <input type="tel" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                  <input type="email" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Residential Address</label>
-                  <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Street Name</label>
-                  <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Emergency Contact (Name & Number)</label>
-                  <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                </div>
+        {/* Progress Bar */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between relative">
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-gray-200 rounded-full z-0"></div>
+            <div 
+              className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-brand-primary rounded-full z-0 transition-all duration-500"
+              style={{ width: `${((currentStep - 1) / 2) * 100}%` }}
+            ></div>
+            
+            {[1, 2, 3].map(step => (
+              <div key={step} className={`relative z-10 flex flex-col items-center justify-center w-10 h-10 rounded-full font-bold transition-colors duration-300 ${currentStep >= step ? 'bg-brand-primary text-white' : 'bg-gray-200 text-gray-500'}`}>
+                {currentStep > step ? <CheckCircle2 className="w-5 h-5" /> : step}
+                <span className={`absolute -bottom-8 text-xs font-medium whitespace-nowrap ${currentStep >= step ? 'text-brand-primary' : 'text-gray-500'}`}>
+                  {step === 1 ? 'Personal' : step === 2 ? 'Program' : 'Background'}
+                </span>
               </div>
+            ))}
+          </div>
+        </div>
 
-              <h4 className="font-medium text-gray-900 mt-8 mb-4">Guardian Information</h4>
-              <div className="grid md:grid-cols-3 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Guardian's Name</label>
-                  <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Guardian's Number</label>
-                  <input type="tel" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Guardian's Residence</label>
-                  <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                </div>
-              </div>
-            </section>
+        <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 mb-24">
+          <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
+            
+            {/* Step 1: Personal Details */}
+            {currentStep === 1 && (
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                <h3 className="text-2xl font-serif font-bold mb-8 border-b border-gray-100 pb-4">Personal Details</h3>
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Surname</label>
+                    <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                    <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Other Names</label>
+                    <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                  </div>
 
-            {/* 2. Course Selection (Option A: Kept from previous structure) */}
-            <section>
-              <h3 className="text-xl font-serif font-bold mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-                <span className="bg-brand-primary text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">2</span>
-                Program Selection
-              </h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-4">Select a Program Category</label>
-                  <div className="grid md:grid-cols-2 gap-3">
-                    {COURSE_CATEGORIES.map(category => (
-                      <label 
-                        key={category.id} 
-                        className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${selectedCategory === category.id ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-brand-primary/50'}`}
-                      >
-                        <input 
-                          type="radio" 
-                          name="category" 
-                          value={category.id}
-                          checked={selectedCategory === category.id}
-                          onChange={(e) => {
-                            setSelectedCategory(e.target.value);
-                            setSelectedCourse('');
-                          }}
-                          className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300"
-                        />
-                        <span className="ml-3 font-medium text-gray-900">{category.title}</span>
-                      </label>
-                    ))}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                    <input type="date" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Place of Birth</label>
+                    <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                    <select className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all bg-white">
+                      <option value="">Select Gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Nationality</label>
+                    <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                    <input type="tel" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Residential Address</label>
+                    <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Emergency Contact</label>
+                    <input type="text" placeholder="Name & Number" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
                   </div>
                 </div>
 
-                {activeCategory && (
-                  <div
-                    className="pt-4 border-t border-gray-100"
-                  >
-                    <label className="block text-sm font-medium text-gray-700 mb-4">Select Specific Course & Duration</label>
-                    <div className="space-y-3">
-                      {activeCategory.courses.map(course => (
+                <h4 className="font-medium text-gray-900 mt-8 mb-4">Guardian Information</h4>
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Guardian's Name</label>
+                    <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Guardian's Number</label>
+                    <input type="tel" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Guardian's Residence</label>
+                    <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 2: Course Selection & Accommodation */}
+            {currentStep === 2 && (
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                <h3 className="text-2xl font-serif font-bold mb-8 border-b border-gray-100 pb-4">Program & Accommodation</h3>
+                <div className="space-y-8">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-4">Select a Program Category</label>
+                    <div className="grid md:grid-cols-2 gap-3">
+                      {COURSE_CATEGORIES.map(category => (
                         <label 
-                          key={course.id} 
-                          className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${selectedCourse === course.id ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-brand-primary/50'}`}
+                          key={category.id} 
+                          className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${selectedCategory === category.id ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-brand-primary/50'}`}
                         >
-                          <div className="flex items-center">
-                            <input 
-                              type="radio" 
-                              name="course" 
-                              value={course.id}
-                              checked={selectedCourse === course.id}
-                              onChange={(e) => setSelectedCourse(e.target.value)}
-                              className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300"
-                            />
-                            <span className="ml-3 font-medium text-gray-900">{course.name}</span>
-                          </div>
-                          <span className="text-brand-primary bg-brand-primary/10 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap">
-                            {course.duration}
-                          </span>
+                          <input 
+                            type="radio" 
+                            name="category" 
+                            value={category.id}
+                            checked={selectedCategory === category.id}
+                            onChange={(e) => {
+                              setSelectedCategory(e.target.value);
+                              setSelectedCourse('');
+                            }}
+                            className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300"
+                          />
+                          <span className="ml-3 font-medium text-gray-900">{category.title}</span>
                         </label>
                       ))}
                     </div>
                   </div>
-                )}
-              </div>
-            </section>
 
-            {/* 3. Accommodation */}
-            <section>
-              <h3 className="text-xl font-serif font-bold mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-                <span className="bg-brand-primary text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">3</span>
-                Accommodation
-              </h3>
-              <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
-                <label className="block text-sm font-medium text-gray-900 mb-3">Do you require hostel accommodation?</label>
-                <p className="text-sm text-gray-500 mb-4">Hostel facilities are available for students who wish to stay on campus (billed per 3 months).</p>
-                <div className="flex gap-6">
-                  <label className="flex items-center cursor-pointer">
-                    <input type="radio" name="requiresHostel" checked={requiresHostel === true} onChange={() => setRequiresHostel(true)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
-                    <span className="ml-2 text-gray-700">Yes, I need a hostel</span>
-                  </label>
-                  <label className="flex items-center cursor-pointer">
-                    <input type="radio" name="requiresHostel" checked={requiresHostel === false} onChange={() => setRequiresHostel(false)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
-                    <span className="ml-2 text-gray-700">No, I will commute from home</span>
-                  </label>
-                </div>
-              </div>
-            </section>
-
-            {/* 4. Educational Background */}
-            <section>
-              <h3 className="text-xl font-serif font-bold mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-                <span className="bg-brand-primary text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">4</span>
-                Educational Background
-              </h3>
-              <div className="grid md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Last School Attended</label>
-                  <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Level</label>
-                  <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                </div>
-              </div>
-              
-              <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
-                <label className="block text-sm font-medium text-gray-900 mb-3">Do you have prior experience / education related to culinary arts?</label>
-                <div className="flex gap-6 mb-4">
-                  <label className="flex items-center cursor-pointer">
-                    <input type="radio" name="hasExperience" checked={hasExperience === true} onChange={() => setHasExperience(true)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
-                    <span className="ml-2 text-gray-700">Yes</span>
-                  </label>
-                  <label className="flex items-center cursor-pointer">
-                    <input type="radio" name="hasExperience" checked={hasExperience === false} onChange={() => setHasExperience(false)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
-                    <span className="ml-2 text-gray-700">No</span>
-                  </label>
-                </div>
-                {hasExperience && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">If Yes, state:</label>
-                    <textarea rows={2} className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all"></textarea>
-                  </div>
-                )}
-              </div>
-            </section>
-
-            {/* 5. Medical History */}
-            <section>
-              <h3 className="text-xl font-serif font-bold mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-                <span className="bg-brand-primary text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">5</span>
-                Medical History
-              </h3>
-              <div className="space-y-6">
-                <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
-                  <label className="block text-sm font-medium text-gray-900 mb-3">Do you have any disabilities?</label>
-                  <div className="flex gap-6 mb-4">
-                    <label className="flex items-center cursor-pointer">
-                      <input type="radio" name="hasDisability" checked={hasDisability === true} onChange={() => setHasDisability(true)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
-                      <span className="ml-2 text-gray-700">Yes</span>
-                    </label>
-                    <label className="flex items-center cursor-pointer">
-                      <input type="radio" name="hasDisability" checked={hasDisability === false} onChange={() => setHasDisability(false)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
-                      <span className="ml-2 text-gray-700">No</span>
-                    </label>
-                  </div>
-                  {hasDisability && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">If Yes, state:</label>
-                      <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                  {activeCategory && (
+                    <div className="pt-4 border-t border-gray-100">
+                      <label className="block text-sm font-medium text-gray-700 mb-4">Select Specific Course & Duration</label>
+                      <div className="space-y-3">
+                        {activeCategory.courses.map(course => (
+                          <label 
+                            key={course.id} 
+                            className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${selectedCourse === course.id ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-brand-primary/50'}`}
+                          >
+                            <div className="flex items-center">
+                              <input 
+                                type="radio" 
+                                name="course" 
+                                value={course.id}
+                                checked={selectedCourse === course.id}
+                                onChange={(e) => setSelectedCourse(e.target.value)}
+                                className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300"
+                              />
+                              <span className="ml-3 font-medium text-gray-900">{course.name}</span>
+                            </div>
+                            <span className="text-brand-primary bg-brand-primary/10 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap">
+                              {course.duration}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
                     </div>
                   )}
-                </div>
 
-                <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
-                  <label className="block text-sm font-medium text-gray-900 mb-3">Do you have any allergies?</label>
-                  <div className="flex gap-6 mb-4">
-                    <label className="flex items-center cursor-pointer">
-                      <input type="radio" name="hasAllergy" checked={hasAllergy === true} onChange={() => setHasAllergy(true)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
-                      <span className="ml-2 text-gray-700">Yes</span>
-                    </label>
-                    <label className="flex items-center cursor-pointer">
-                      <input type="radio" name="hasAllergy" checked={hasAllergy === false} onChange={() => setHasAllergy(false)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
-                      <span className="ml-2 text-gray-700">No</span>
-                    </label>
+                  <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 mt-8">
+                    <label className="block text-sm font-medium text-gray-900 mb-3">Do you require hostel accommodation?</label>
+                    <p className="text-sm text-gray-500 mb-4">Hostel facilities are available for students who wish to stay on campus (billed per 3 months).</p>
+                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                      <label className="flex items-center cursor-pointer">
+                        <input type="radio" name="requiresHostel" checked={requiresHostel === true} onChange={() => setRequiresHostel(true)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                        <span className="ml-2 text-gray-700">Yes, I need a hostel</span>
+                      </label>
+                      <label className="flex items-center cursor-pointer">
+                        <input type="radio" name="requiresHostel" checked={requiresHostel === false} onChange={() => setRequiresHostel(false)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                        <span className="ml-2 text-gray-700">No, I will commute from home</span>
+                      </label>
+                    </div>
                   </div>
-                  {hasAllergy && (
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 3: Background & Medical */}
+            {currentStep === 3 && (
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                <h3 className="text-2xl font-serif font-bold mb-8 border-b border-gray-100 pb-4">Background & Medical</h3>
+                
+                <div className="space-y-8">
+                  <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">If Yes, state:</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Last School Attended</label>
                       <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
                     </div>
-                  )}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Level of Education</label>
+                      <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                    <label className="block text-sm font-medium text-gray-900 mb-3">Do you have prior experience / education related to culinary arts?</label>
+                    <div className="flex gap-6 mb-4">
+                      <label className="flex items-center cursor-pointer">
+                        <input type="radio" name="hasExperience" checked={hasExperience === true} onChange={() => setHasExperience(true)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                        <span className="ml-2 text-gray-700">Yes</span>
+                      </label>
+                      <label className="flex items-center cursor-pointer">
+                        <input type="radio" name="hasExperience" checked={hasExperience === false} onChange={() => setHasExperience(false)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                        <span className="ml-2 text-gray-700">No</span>
+                      </label>
+                    </div>
+                    {hasExperience && (
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                        <label className="block text-sm font-medium text-gray-700 mb-2 mt-4">If Yes, state details:</label>
+                        <textarea rows={2} className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all"></textarea>
+                      </motion.div>
+                    )}
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                      <label className="block text-sm font-medium text-gray-900 mb-3">Do you have any disabilities?</label>
+                      <div className="flex gap-6 mb-4">
+                        <label className="flex items-center cursor-pointer">
+                          <input type="radio" name="hasDisability" checked={hasDisability === true} onChange={() => setHasDisability(true)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                          <span className="ml-2 text-gray-700">Yes</span>
+                        </label>
+                        <label className="flex items-center cursor-pointer">
+                          <input type="radio" name="hasDisability" checked={hasDisability === false} onChange={() => setHasDisability(false)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                          <span className="ml-2 text-gray-700">No</span>
+                        </label>
+                      </div>
+                      {hasDisability && (
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                          <label className="block text-sm font-medium text-gray-700 mb-2 mt-4">If Yes, state:</label>
+                          <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                        </motion.div>
+                      )}
+                    </div>
+
+                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                      <label className="block text-sm font-medium text-gray-900 mb-3">Do you have any allergies?</label>
+                      <div className="flex gap-6 mb-4">
+                        <label className="flex items-center cursor-pointer">
+                          <input type="radio" name="hasAllergy" checked={hasAllergy === true} onChange={() => setHasAllergy(true)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                          <span className="ml-2 text-gray-700">Yes</span>
+                        </label>
+                        <label className="flex items-center cursor-pointer">
+                          <input type="radio" name="hasAllergy" checked={hasAllergy === false} onChange={() => setHasAllergy(false)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                          <span className="ml-2 text-gray-700">No</span>
+                        </label>
+                      </div>
+                      {hasAllergy && (
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                          <label className="block text-sm font-medium text-gray-700 mb-2 mt-4">If Yes, state:</label>
+                          <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                        </motion.div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="bg-brand-primary/5 p-6 rounded-xl border border-brand-primary/20 mt-8">
+                    <label className="flex items-start gap-4 cursor-pointer">
+                      <input type="checkbox" className="mt-1 w-5 h-5 text-brand-primary focus:ring-brand-primary border-gray-300 rounded" required />
+                      <span className="text-sm text-gray-700 leading-relaxed">
+                        I certify that all the information I have provided on this application form is complete and accurate. I further understand that any misrepresentation or material omission on this form may make me ineligible for admission or dismissal at College of Culinary Arts and Hospitality Management. Furthermore, I will abide by all the policies and regulations of the institution.
+                      </span>
+                    </label>
+                  </div>
                 </div>
-              </div>
-            </section>
+              </motion.div>
+            )}
 
-            {/* 6. Declaration */}
-            <section className="pt-6 border-t border-gray-200">
-              <h3 className="text-xl font-serif font-bold mb-6 text-center">Declaration</h3>
-              <div className="bg-brand-primary/5 p-6 rounded-xl border border-brand-primary/20">
-                <label className="flex items-start gap-4 cursor-pointer">
-                  <input type="checkbox" className="mt-1 w-5 h-5 text-brand-primary focus:ring-brand-primary border-gray-300 rounded" required />
-                  <span className="text-sm text-gray-700 leading-relaxed">
-                    I certify that all the information I have provided on this application form is complete and accurate. I further understand that any misrepresentation or material omission on this form may make me ineligible for admission or dismissal at College of Culinary Arts and Hospitality Management. Furthermore, I will abide by all the policies and regulations of the institution.
-                  </span>
-                </label>
-              </div>
-            </section>
+            {/* Navigation Buttons */}
+            <div className="flex items-center justify-between pt-8 border-t border-gray-100 mt-8">
+              {currentStep > 1 ? (
+                <button 
+                  type="button" 
+                  onClick={prevStep}
+                  className="px-6 py-3 rounded-xl font-medium text-gray-600 hover:bg-gray-100 transition-colors flex items-center gap-2"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                  Back
+                </button>
+              ) : <div></div>}
 
-            <div className="pt-6">
-              <button type="button" className="w-full bg-brand-primary text-white py-4 rounded-xl font-medium text-lg hover:bg-opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand-primary/30">
-                Submit Application
-                <ChevronRight className="w-5 h-5" />
-              </button>
+              {currentStep < 3 ? (
+                <button 
+                  type="button" 
+                  onClick={nextStep}
+                  className="bg-brand-primary text-white px-8 py-3 rounded-xl font-medium hover:bg-opacity-90 transition-all flex items-center gap-2 shadow-lg shadow-brand-primary/30"
+                >
+                  Next Step
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              ) : (
+                <button 
+                  type="button" 
+                  className="bg-green-600 text-white px-8 py-3 rounded-xl font-medium hover:bg-green-700 transition-all flex items-center gap-2 shadow-lg shadow-green-600/30"
+                >
+                  Submit Application
+                  <CheckCircle2 className="w-5 h-5" />
+                </button>
+              )}
             </div>
           </form>
         </div>
+
+        {/* Admissions FAQ */}
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-serif font-bold text-gray-900">Admissions FAQ</h2>
+          </div>
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <div key={index} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <button 
+                  onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
+                  className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+                >
+                  <span className="font-bold text-gray-900 pr-4">{faq.q}</span>
+                  <ChevronDown className={`w-5 h-5 text-gray-500 shrink-0 transition-transform duration-300 ${expandedFaq === index ? 'rotate-180' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {expandedFaq === index && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-6 pb-5 pt-2 text-gray-600 leading-relaxed border-t border-gray-50">
+                        {faq.a}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </div>
   );

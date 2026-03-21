@@ -2,13 +2,16 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRef } from 'react';
 import { 
-  Utensils, Flower2, Award, Users, ArrowRight, CheckCircle2
+  Utensils, Flower2, Award, Users, ArrowRight, CheckCircle2,
+  ChefHat, Briefcase, GraduationCap, Building, Calendar, User, Quote
 } from 'lucide-react';
 import { 
   SCHOOL_NAME, FULL_NAME, TAGLINE, SUB_TAGLINE, COURSE_CATEGORIES, FEATURES, TESTIMONIALS, GALLERY_IMAGES 
 } from '@/constants';
+import { BLOG_POSTS } from '@/app/blog/data';
 
 const Hero = () => {
     
@@ -58,6 +61,34 @@ const Hero = () => {
           className="w-5 h-8 border border-white/20 rounded-full flex justify-center p-1"
         >
           <div className="w-1 h-2 bg-white/40 rounded-full" />
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const FastFacts = () => {
+  const facts = [
+    { icon: <ChefHat className="w-8 h-8" />, number: "15+", label: "Expert Instructors" },
+    { icon: <Briefcase className="w-8 h-8" />, number: "95%", label: "Employment Rate" },
+    { icon: <Building className="w-8 h-8" />, number: "5", label: "Pro Kitchens" },
+    { icon: <GraduationCap className="w-8 h-8" />, number: "1000+", label: "Graduates" },
+  ];
+
+  return (
+    <section className="py-16 bg-gray-950 text-white relative overflow-hidden border-t border-white/10">
+      <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/kitchen-bg/1920/1080')] opacity-5 bg-cover bg-center mix-blend-overlay" />
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-white/10">
+          {facts.map((fact, index) => (
+            <div key={index} className="flex flex-col items-center text-center px-4">
+              <div className="text-brand-primary mb-4 bg-white/5 p-4 rounded-full">
+                {fact.icon}
+              </div>
+              <div className="text-4xl md:text-5xl font-serif font-bold mb-2">{fact.number}</div>
+              <div className="text-sm text-gray-400 uppercase tracking-wider font-medium">{fact.label}</div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -281,31 +312,38 @@ const Gallery = () => {
     <section id="gallery" className="py-24 px-6 bg-white">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-          <div
-            
-            
-            
-          >
+          <div>
             <span className="text-brand-primary font-medium tracking-widest text-xs uppercase mb-4 block">Visual Journey</span>
-            <h2 className="text-4xl md:text-5xl font-serif text-gray-900">Life at CoCAHM</h2>
+            <h2 className="text-4xl md:text-5xl font-serif text-gray-900">A Day in the Life</h2>
+            <p className="text-gray-500 max-w-2xl mt-4">
+              Step inside our kitchens and see the passion, precision, and creativity that define the CoCAHM experience.
+            </p>
           </div>
-          <button className="text-brand-primary font-semibold border-b-2 border-brand-primary pb-1 hover:opacity-80 transition-opacity">
-            View All Photos
-          </button>
+          <Link href="/student-life" className="text-brand-primary font-semibold border-b-2 border-brand-primary pb-1 hover:opacity-80 transition-opacity">
+            Explore Student Life
+          </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {GALLERY_IMAGES.map((img, index) => (
             <div
               key={index}
-              className={`relative overflow-hidden rounded-2xl group bg-gray-100 ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''}`}
+              className={`relative overflow-hidden rounded-2xl group bg-gray-100 ${
+                index === 0 ? 'md:col-span-2 md:row-span-2 aspect-square' : 
+                index === 3 ? 'md:col-span-2 aspect-[2/1]' : 'aspect-square'
+              }`}
             >
-              <img 
+              <Image 
                 src={img} 
                 alt={`Gallery ${index}`} 
-                className="w-full h-full object-cover aspect-square group-hover:scale-110 transition-transform duration-700"
+                fill
+                className="object-cover group-hover:scale-110 transition-transform duration-700"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                <span className="text-white font-medium opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                  {index % 2 === 0 ? 'Culinary Arts' : 'Pastry & Baking'}
+                </span>
+              </div>
             </div>
           ))}
         </div>
@@ -316,30 +354,108 @@ const Gallery = () => {
 
 const Testimonials = () => {
   return (
-    <section className="py-24 px-6 bg-white overflow-hidden">
+    <section className="py-24 px-6 bg-brand-bg overflow-hidden">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-serif mb-4">What Our Students Say</h2>
-          <div className="w-24 h-1 bg-brand-primary/20 mx-auto rounded-full" />
+          <span className="text-brand-primary font-medium tracking-widest text-xs uppercase mb-4 block">Alumni Success</span>
+          <h2 className="text-4xl md:text-5xl font-serif mb-6">Where Are They Now?</h2>
+          <p className="text-gray-500 max-w-2xl mx-auto">
+            Our graduates go on to lead kitchens, start successful businesses, and shape the future of hospitality globally.
+          </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
           {TESTIMONIALS.map((t, index) => (
             <div
               key={index}
-              className="p-10 rounded-3xl bg-brand-bg relative group hover:bg-brand-primary hover:text-white transition-colors duration-500"
+              className="p-8 rounded-3xl bg-white shadow-sm border border-gray-100 relative group hover:shadow-xl transition-all duration-500 flex flex-col"
             >
-              <div className="mb-6 text-brand-primary group-hover:text-white/50 transition-colors">
-                <Utensils className="w-8 h-8" />
+              <div className="absolute top-8 right-8 text-brand-primary/10 group-hover:text-brand-primary/20 transition-colors">
+                <Quote className="w-16 h-16" />
               </div>
-              <p className="text-lg font-serif italic mb-8 leading-relaxed">
+              <p className="text-gray-700 italic mb-8 relative z-10 flex-grow">
                 "{t.content}"
               </p>
-              <div>
-                <h4 className="font-bold text-lg">{t.name}</h4>
-                <p className="text-sm opacity-60">{t.role}</p>
+              <div className="flex items-center gap-4 relative z-10 border-t border-gray-100 pt-6">
+                <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-200 shrink-0 relative">
+                  <Image src={t.image!} alt={t.name} fill className="object-cover" referrerPolicy="no-referrer" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-gray-900">{t.name}</h4>
+                  <p className="text-sm text-brand-primary font-medium">{t.role}</p>
+                </div>
               </div>
             </div>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const LatestBlog = () => {
+  const latestPosts = BLOG_POSTS.slice(0, 3);
+  return (
+    <section className="py-24 px-6 bg-white">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <span className="text-brand-primary font-medium tracking-widest text-xs uppercase mb-4 block">Our Kitchen</span>
+          <h2 className="text-4xl md:text-5xl font-serif mb-6">Latest from the Blog</h2>
+          <p className="text-gray-500 max-w-2xl mx-auto">
+            Discover recipes, techniques, and stories from our expert chefs and culinary students.
+          </p>
+        </div>
+        <div className="grid md:grid-cols-3 gap-8">
+          {latestPosts.map((post) => (
+            <article key={post.slug} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow flex flex-col">
+              <div className="relative h-48 sm:h-64 overflow-hidden">
+                <Image 
+                  src={post.image} 
+                  alt={post.title} 
+                  fill
+                  referrerPolicy="no-referrer"
+                  className="object-cover transition-transform duration-500 hover:scale-105"
+                />
+                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-brand-primary uppercase tracking-wider">
+                  {post.category}
+                </div>
+              </div>
+              
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+                  <div className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    {post.date}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <User className="w-4 h-4" />
+                    {post.author}
+                  </div>
+                </div>
+                
+                <h2 className="font-serif text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                  <Link href={`/blog/${post.slug}`} className="hover:text-brand-primary transition-colors">
+                    {post.title}
+                  </Link>
+                </h2>
+                
+                <p className="text-gray-600 mb-6 line-clamp-3 flex-grow">
+                  {post.excerpt}
+                </p>
+                
+                <Link 
+                  href={`/blog/${post.slug}`}
+                  className="inline-flex items-center gap-2 text-brand-primary font-medium hover:gap-3 transition-all mt-auto"
+                >
+                  Read Article <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+        <div className="text-center mt-12">
+          <Link href="/blog" className="inline-flex items-center gap-2 bg-brand-primary text-white px-8 py-3 rounded-full font-medium hover:bg-opacity-90 transition-all">
+            View All Posts <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </div>
     </section>
@@ -363,11 +479,13 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <FastFacts />
       <About />
       <Courses />
       <Features />
       <Gallery />
       <Testimonials />
+      <LatestBlog />
     </>
   );
 }

@@ -14,6 +14,13 @@ export const COURSE_CATEGORIES = [
     title: "Diploma Programs (City & Guilds - UK)",
     description: "Internationally recognized diploma programs for comprehensive culinary education.",
     image: "https://picsum.photos/seed/diploma/800/600",
+    curriculum: [
+      "Food Safety & Hygiene",
+      "Principles of Cooking",
+      "Advanced Culinary Techniques",
+      "Kitchen Management & Costing"
+    ],
+    careerOutcomes: ["Executive Chef", "Restaurant Manager", "Culinary Consultant"],
     courses: [
       { id: "dip-food-prep", name: "Food Preparation & Culinary Arts", duration: "18 Months" }
     ]
@@ -23,6 +30,13 @@ export const COURSE_CATEGORIES = [
     title: "Professional Cookery & Culinary Arts",
     description: "Master fundamental and advanced cooking techniques, kitchen operations, and international cuisines.",
     image: "https://picsum.photos/seed/cookery/800/600",
+    curriculum: [
+      "Knife Skills & Mother Sauces",
+      "Meat, Poultry & Seafood Prep",
+      "International Cuisine",
+      "Plating & Presentation"
+    ],
+    careerOutcomes: ["Sous Chef", "Line Cook", "Private Caterer"],
     courses: [
       { id: "prof-cookery-12", name: "Professional Cookery Chef", duration: "12 Months" },
       { id: "prof-cookery-6", name: "Professional Cookery Chef", duration: "6 Months" },
@@ -36,6 +50,13 @@ export const COURSE_CATEGORIES = [
     title: "Cake & Sugarcraft",
     description: "A specialized program focused on advanced cake baking, intricate sugarcraft, and professional decoration.",
     image: "https://picsum.photos/seed/cake/800/600",
+    curriculum: [
+      "Baking Fundamentals",
+      "Fondant & Buttercream Techniques",
+      "Sugar Flowers & Sculpting",
+      "Wedding Cake Design"
+    ],
+    careerOutcomes: ["Pastry Chef", "Cake Designer", "Bakery Owner"],
     courses: [
       { id: "prof-cake-6", name: "Professional Cake Class", duration: "6 Months" },
       { id: "adv-cake-sugar-6", name: "Advanced Cake & Sugar Craft Class", duration: "6 Months" },
@@ -49,6 +70,13 @@ export const COURSE_CATEGORIES = [
     title: "Décor & Event Management",
     description: "Learn the creative and strategic sides of the hospitality industry, from event planning to venue decoration.",
     image: "https://picsum.photos/seed/events/800/600",
+    curriculum: [
+      "Event Planning & Logistics",
+      "Floral Design & Draping",
+      "Budgeting & Client Management",
+      "Vendor Coordination"
+    ],
+    careerOutcomes: ["Event Planner", "Wedding Coordinator", "Venue Manager"],
     courses: [
       { id: "decor-6", name: "Décor and Event Management", duration: "6 Months" },
       { id: "decor-3", name: "Décor and Event Management", duration: "3 Months" }
@@ -59,6 +87,12 @@ export const COURSE_CATEGORIES = [
     title: "Short / Crash Courses",
     description: "Intensive, fast-tracked courses designed to quickly build your skills in specific culinary areas.",
     image: "https://picsum.photos/seed/pastry/800/600",
+    curriculum: [
+      "Intensive Skill Building",
+      "Specialized Techniques",
+      "Quick-Service Operations"
+    ],
+    careerOutcomes: ["Prep Cook", "Specialty Baker", "Food Enthusiast"],
     courses: [
       { id: "pastry-crash", name: "Pastry Crash Course", duration: "1 Month" },
       { id: "weekend-crash", name: "Weekend Crash Course", duration: "8 Saturdays" },
@@ -97,18 +131,21 @@ export const FEATURES = [
 export const TESTIMONIALS = [
   {
     name: "Kwame Mensah",
-    role: "Executive Chef",
-    content: "CoCAHM transformed my passion into a career. The hands-on training and City & Guilds certification opened doors for me globally.",
+    role: "Executive Chef at The Royal Hotel",
+    content: "CoCAHM transformed my passion into a career. The hands-on training and City & Guilds certification opened doors for me globally. I now lead a team of 40 chefs.",
+    image: "https://picsum.photos/seed/kwame/400/400"
   },
   {
     name: "Ama Osei",
-    role: "Bakery Owner",
-    content: "The Cake & Sugarcraft program gave me the confidence and skills to start my own successful business in Accra.",
+    role: "Founder, Sweet Delights Bakery",
+    content: "The Cake & Sugarcraft program gave me the confidence and skills to start my own successful business in Accra. The mentorship was invaluable.",
+    image: "https://picsum.photos/seed/ama/400/400"
   },
   {
     name: "Grace Appiah",
-    role: "Event Manager",
-    content: "Creative, challenging, and rewarding. The Décor and Event Management course was a game-changer for my career.",
+    role: "Lead Event Manager",
+    content: "Creative, challenging, and rewarding. The Décor and Event Management course was a game-changer for my career. I now coordinate events for top corporate clients.",
+    image: "https://picsum.photos/seed/grace/400/400"
   },
 ];
 

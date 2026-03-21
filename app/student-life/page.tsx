@@ -24,12 +24,12 @@ export default function StudentLife() {
   ];
 
   return (
-    <div className="pt-32 pb-24 px-6 min-h-screen bg-white">
+    <div className="pt-32 pb-24 px-6 min-h-screen bg-white text-gray-900">
       <div className="max-w-7xl mx-auto">
         <div className="mb-16 text-center">
           <span className="text-brand-primary font-medium tracking-widest text-xs uppercase mb-4 block">Campus Experience</span>
-          <h1 className="text-4xl md:text-5xl font-serif mb-6">Student Life at CoCAHM</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
+          <h1 className="text-4xl md:text-5xl font-serif mb-6 text-gray-950">Student Life at CoCAHM</h1>
+          <p className="text-gray-800 max-w-2xl mx-auto text-lg leading-relaxed">
             Life at CoCAHM is vibrant, challenging, and deeply rewarding. Beyond the kitchens and classrooms, our students build lifelong friendships, network with industry leaders, and immerse themselves in the rich culinary culture of Ghana.
           </p>
         </div>
@@ -42,11 +42,11 @@ export default function StudentLife() {
             viewport={{ once: true }}
             className="space-y-6"
           >
-            <h2 className="text-3xl font-serif font-bold">A Community of Creators</h2>
-            <p className="text-gray-600 leading-relaxed text-lg">
+            <h2 className="text-3xl font-serif font-bold text-gray-950">A Community of Creators</h2>
+            <p className="text-gray-800 leading-relaxed text-lg">
               When you join CoCAHM, you join a family of passionate food enthusiasts. Our campus is a melting pot of ideas where traditional Ghanaian recipes meet modern international techniques.
             </p>
-            <p className="text-gray-600 leading-relaxed text-lg">
+            <p className="text-gray-800 leading-relaxed text-lg">
               From intense practical sessions in our state-of-the-art kitchens to collaborative event planning projects, every day is an opportunity to learn, create, and grow alongside your peers.
             </p>
           </motion.div>
@@ -64,8 +64,8 @@ export default function StudentLife() {
         {/* A Typical Day */}
         <div className="mb-24 bg-brand-bg rounded-3xl p-8 md:p-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-serif font-bold mb-4">A Day in the Life</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">Experience the rhythm of a culinary student. Every day brings new challenges, flavors, and opportunities to perfect your craft.</p>
+            <h2 className="text-3xl font-serif font-bold mb-4 text-gray-950">A Day in the Life</h2>
+            <p className="text-gray-800 max-w-2xl mx-auto">Experience the rhythm of a culinary student. Every day brings new challenges, flavors, and opportunities to perfect your craft.</p>
           </div>
           
           <div className="grid md:grid-cols-4 gap-8 relative">
@@ -83,8 +83,8 @@ export default function StudentLife() {
                   {item.icon}
                 </div>
                 <span className="text-brand-primary font-bold text-sm mb-2">{item.time}</span>
-                <h3 className="font-serif font-bold text-lg mb-2">{item.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
+                <h3 className="font-serif font-bold text-lg mb-2 text-gray-950">{item.title}</h3>
+                <p className="text-gray-700 text-sm leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -104,8 +104,8 @@ export default function StudentLife() {
                   <Trophy className="w-64 h-64" />
                 </div>
                 <Trophy className="w-12 h-12 mb-6 text-orange-300" />
-                <h2 className="text-3xl font-serif font-bold mb-4">Excellence Recognized</h2>
-                <p className="text-white/80 leading-relaxed">
+                <h2 className="text-3xl font-serif font-bold mb-4 text-white">Excellence Recognized</h2>
+                <p className="text-white/90 leading-relaxed">
                   Our students consistently demonstrate their mastery at national and international culinary competitions, bringing home accolades that speak to the quality of our training.
                 </p>
               </div>
@@ -125,9 +125,9 @@ export default function StudentLife() {
                     {award.year}
                   </div>
                   <div>
-                    <h3 className="font-serif font-bold text-xl mb-1">{award.title}</h3>
+                    <h3 className="font-serif font-bold text-xl mb-1 text-gray-950">{award.title}</h3>
                     <span className="inline-block text-brand-primary font-medium text-sm mb-3">{award.award}</span>
-                    <p className="text-gray-600 leading-relaxed">{award.desc}</p>
+                    <p className="text-gray-800 leading-relaxed">{award.desc}</p>
                   </div>
                 </motion.div>
               ))}
@@ -137,7 +137,7 @@ export default function StudentLife() {
 
         {/* Gallery Grid */}
         <div className="mb-16">
-          <h2 className="text-3xl font-serif font-bold text-center mb-12">Campus Gallery</h2>
+          <h2 className="text-3xl font-serif font-bold text-center mb-12 text-gray-950">Campus Gallery</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {GALLERY_IMAGES.map((img, index) => (
               <motion.div

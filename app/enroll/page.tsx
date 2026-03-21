@@ -86,32 +86,32 @@ function EnrollmentForm() {
             {/* Step 1: Personal Details */}
             {currentStep === 1 && (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                <h3 className="text-2xl font-serif font-bold mb-8 border-b border-gray-100 pb-4">Personal Details</h3>
+                <h3 className="text-2xl font-serif font-bold mb-8 border-b border-gray-100 pb-4 text-gray-950">Personal Details</h3>
                 <div className="grid md:grid-cols-3 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Surname</label>
-                    <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                    <label className="block text-sm font-medium text-gray-800 mb-2">Surname</label>
+                    <input type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                    <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                    <label className="block text-sm font-medium text-gray-800 mb-2">First Name</label>
+                    <input type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Other Names</label>
-                    <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                    <label className="block text-sm font-medium text-gray-800 mb-2">Other Names</label>
+                    <input type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
-                    <input type="date" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                    <label className="block text-sm font-medium text-gray-800 mb-2">Date of Birth</label>
+                    <input type="date" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Place of Birth</label>
-                    <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                    <label className="block text-sm font-medium text-gray-800 mb-2">Place of Birth</label>
+                    <input type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
-                    <select className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all bg-white">
+                    <label className="block text-sm font-medium text-gray-800 mb-2">Gender</label>
+                    <select className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all bg-white text-gray-900">
                       <option value="">Select Gender</option>
                       <option value="male">Male</option>
                       <option value="female">Female</option>
@@ -120,41 +120,41 @@ function EnrollmentForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Nationality</label>
-                    <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                    <label className="block text-sm font-medium text-gray-800 mb-2">Nationality</label>
+                    <input type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                    <input type="tel" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                    <label className="block text-sm font-medium text-gray-800 mb-2">Phone Number</label>
+                    <input type="tel" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                    <input type="email" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                    <label className="block text-sm font-medium text-gray-800 mb-2">Email</label>
+                    <input type="email" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                   </div>
 
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Residential Address</label>
-                    <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                    <label className="block text-sm font-medium text-gray-800 mb-2">Residential Address</label>
+                    <input type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Emergency Contact</label>
-                    <input type="text" placeholder="Name & Number" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                    <label className="block text-sm font-medium text-gray-800 mb-2">Emergency Contact</label>
+                    <input type="text" placeholder="Name & Number" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                   </div>
                 </div>
 
-                <h4 className="font-medium text-gray-900 mt-8 mb-4">Guardian Information</h4>
+                <h4 className="font-medium text-gray-950 mt-8 mb-4">Guardian Information</h4>
                 <div className="grid md:grid-cols-3 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Guardian's Name</label>
-                    <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                    <label className="block text-sm font-medium text-gray-800 mb-2">Guardian's Name</label>
+                    <input type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Guardian's Number</label>
-                    <input type="tel" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                    <label className="block text-sm font-medium text-gray-800 mb-2">Guardian's Number</label>
+                    <input type="tel" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Guardian's Residence</label>
-                    <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                    <label className="block text-sm font-medium text-gray-800 mb-2">Guardian's Residence</label>
+                    <input type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                   </div>
                 </div>
               </motion.div>

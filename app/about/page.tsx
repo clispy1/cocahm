@@ -62,12 +62,12 @@ export default function About() {
         
         <div className="max-w-4xl mx-auto relative z-10 text-center">
           <h1
-            className="text-4xl md:text-6xl font-serif font-bold text-gray-900 mb-6"
+            className="text-4xl md:text-6xl font-serif font-bold text-gray-950 mb-6"
           >
             Crafting Culinary Excellence Since 1971
           </h1>
           <p
-            className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto"
+            className="text-lg md:text-xl text-gray-800 leading-relaxed max-w-3xl mx-auto"
           >
             At the College of Culinary Arts and Hospitality Management (CoCAHM), we turn culinary passion into professional excellence. With over 50 years of culinary heritage, we are Ghana's premier institution for culinary education.
           </p>
@@ -78,7 +78,7 @@ export default function About() {
       <section className="max-w-5xl mx-auto px-6 py-16 md:py-24">
         <div className="text-center mb-16">
           <span className="text-brand-primary font-medium tracking-widest text-xs uppercase mb-4 block">Our Heritage</span>
-          <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900">The CoCAHM Journey</h2>
+          <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-950">The CoCAHM Journey</h2>
         </div>
         
         <div className="relative border-l-2 border-brand-primary/20 ml-4 md:ml-1/2 md:left-1/2 md:-translate-x-1/2 space-y-12">
@@ -94,8 +94,8 @@ export default function About() {
               <div className="absolute -left-[9px] md:left-1/2 md:-translate-x-1/2 w-4 h-4 rounded-full bg-brand-primary ring-4 ring-white" />
               <div className={`w-full md:w-1/2 pl-8 md:pl-0 ${index % 2 === 0 ? 'md:pl-12' : 'md:pr-12 md:text-right'}`}>
                 <span className="text-brand-primary font-bold text-xl mb-2 block">{item.year}</span>
-                <h3 className="text-2xl font-serif font-bold text-gray-900 mb-3">{item.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{item.desc}</p>
+                <h3 className="text-2xl font-serif font-bold text-gray-950 mb-3">{item.title}</h3>
+                <p className="text-gray-800 leading-relaxed">{item.desc}</p>
               </div>
             </motion.div>
           ))}
@@ -106,8 +106,8 @@ export default function About() {
       <section className="bg-white py-20 md:py-32">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-6">Why Choose CoCAHM</h2>
-            <p className="text-lg text-gray-600">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-950 mb-6">Why Choose CoCAHM</h2>
+            <p className="text-lg text-gray-800">
               Our many qualities make us unique in the culinary world. Discover what sets our education apart.
             </p>
           </div>
@@ -121,8 +121,8 @@ export default function About() {
                 <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center shadow-sm mb-6">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                <h3 className="text-xl font-bold text-gray-950 mb-3">{feature.title}</h3>
+                <p className="text-gray-800 leading-relaxed">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -134,8 +134,8 @@ export default function About() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="text-brand-primary font-medium tracking-widest text-xs uppercase mb-4 block">Facilities</span>
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-6">The Kitchen Tour</h2>
-            <p className="text-lg text-gray-600">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-950 mb-6">The Kitchen Tour</h2>
+            <p className="text-lg text-gray-800">
               Train in environments that mirror the world's finest restaurants and hotels.
             </p>
           </div>
@@ -154,8 +154,8 @@ export default function About() {
                   <div className="w-12 h-12 bg-brand-primary/10 text-brand-primary rounded-xl flex items-center justify-center mb-6">
                     {fac.icon}
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{fac.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{fac.desc}</p>
+                  <h3 className="text-xl font-bold text-gray-950 mb-3">{fac.title}</h3>
+                  <p className="text-gray-800 leading-relaxed">{fac.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -168,8 +168,8 @@ export default function About() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="text-brand-primary font-medium tracking-widest text-xs uppercase mb-4 block">Our Experts</span>
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-6">Meet Our Master Chefs</h2>
-            <p className="text-lg text-gray-600">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-950 mb-6">Meet Our Master Chefs</h2>
+            <p className="text-lg text-gray-800">
               Learn from the best. Our faculty comprises seasoned industry professionals, award-winning chefs, and hospitality experts dedicated to your success.
             </p>
           </div>
@@ -196,7 +196,7 @@ export default function About() {
                   </div>
                 </div>
                 <div className="px-2 pb-2">
-                  <h3 className="text-2xl font-serif font-bold text-gray-900 mb-1">{faculty.name}</h3>
+                  <h3 className="text-2xl font-serif font-bold text-gray-950 mb-1">{faculty.name}</h3>
                   <p className="text-brand-primary font-medium">{faculty.role}</p>
                 </div>
               </div>

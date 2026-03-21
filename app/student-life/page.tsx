@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { motion } from 'motion/react';
 import { GALLERY_IMAGES } from '@/constants';
 
 export default function StudentLife() {
@@ -22,10 +21,10 @@ export default function StudentLife() {
 
         {/* Highlight Section */}
         <div className="grid md:grid-cols-2 gap-12 items-center mb-24">
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+          <div 
+            
+            
+            
             className="space-y-6"
           >
             <h2 className="text-3xl font-serif font-bold">A Community of Creators</h2>
@@ -35,16 +34,16 @@ export default function StudentLife() {
             <p className="text-gray-600 leading-relaxed text-lg">
               From intense practical sessions in our state-of-the-art kitchens to collaborative event planning projects, every day is an opportunity to learn, create, and grow alongside your peers.
             </p>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+          </div>
+          <div 
+            
+            
+            
             className="grid grid-cols-2 gap-4"
           >
             <img src="https://picsum.photos/seed/student1/400/500" alt="Students cooking" className="rounded-2xl w-full h-full object-cover" referrerPolicy="no-referrer" />
             <img src="https://picsum.photos/seed/student2/400/500" alt="Students plating" className="rounded-2xl w-full h-full object-cover mt-8" referrerPolicy="no-referrer" />
-          </motion.div>
+          </div>
         </div>
 
         {/* Gallery Grid */}
@@ -52,13 +51,9 @@ export default function StudentLife() {
           <h2 className="text-3xl font-serif font-bold text-center mb-12">Campus Gallery</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {GALLERY_IMAGES.map((img, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className={`relative overflow-hidden rounded-2xl group ${index === 0 || index === 3 ? 'md:col-span-2 md:row-span-2' : ''}`}
+                className={`relative overflow-hidden rounded-2xl group bg-gray-100 ${index === 0 || index === 3 ? 'md:col-span-2 md:row-span-2' : ''}`}
               >
                 <img 
                   src={img} 
@@ -67,7 +62,7 @@ export default function StudentLife() {
                   referrerPolicy="no-referrer"
                 />
                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

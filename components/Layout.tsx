@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
-  Menu, X, MapPin, Phone, Mail, Instagram, Facebook, Twitter 
+  Menu, X, MapPin, Phone, Mail, Instagram, Facebook, Twitter, ChevronDown
 } from 'lucide-react';
 import { SCHOOL_NAME } from '@/constants';
 
@@ -19,6 +19,10 @@ export const Navbar = () => {
       setIsScrolled(true);
       return;
     }
+    
+    // Check initial scroll position when entering home page
+    setIsScrolled(window.scrollY > 20);
+    
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -28,8 +32,15 @@ export const Navbar = () => {
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
     { name: 'Courses', href: '/courses' },
-    { name: 'Student Life', href: '/student-life' },
-    { name: 'Events', href: '/events' },
+    { 
+      name: 'Discover', 
+      dropdown: true,
+      items: [
+        { name: 'Student Life', href: '/student-life' },
+        { name: 'Blog', href: '/blog' },
+        { name: 'Events', href: '/events' },
+      ]
+    },
     { name: 'Contact', href: '/contact' },
   ];
 
@@ -37,22 +48,42 @@ export const Navbar = () => {
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-6'}`}>
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2">
-          <div 
-            className={`h-10 w-48 ${isScrolled ? 'bg-brand-primary' : 'bg-white'}`} 
-            aria-label={SCHOOL_NAME}
+          <img 
+            src="/logo-w.svg" 
+            alt={SCHOOL_NAME} 
+            className={`h-10 w-auto ${isScrolled ? 'brightness-0' : 'brightness-100'}`}
           />
         </Link>
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
-            <Link 
-              key={link.name} 
-              href={link.href} 
-              className={`text-sm font-medium transition-colors hover:text-brand-primary ${isScrolled ? 'text-gray-600' : 'text-white/90'}`}
-            >
-              {link.name}
-            </Link>
+            link.dropdown ? (
+              <div key={link.name} className="relative group">
+                <button className={`flex items-center gap-1 text-sm font-medium transition-colors hover:text-brand-primary ${isScrolled ? 'text-gray-600' : 'text-white/90'}`}>
+                  {link.name} <ChevronDown className="w-4 h-4" />
+                </button>
+                <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 overflow-hidden">
+                  {link.items?.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand-primary transition-colors"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <Link 
+                key={link.name} 
+                href={link.href!} 
+                className={`text-sm font-medium transition-colors hover:text-brand-primary ${isScrolled ? 'text-gray-600' : 'text-white/90'}`}
+              >
+                {link.name}
+              </Link>
+            )
           ))}
           <Link href="/enroll" className="bg-brand-primary text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-opacity-90 transition-all">
             Enroll Now
@@ -61,7 +92,7 @@ export const Navbar = () => {
 
         {/* Mobile Menu Toggle */}
         <button 
-          className="md:hidden text-white"
+          className={`md:hidden ${isScrolled ? 'text-gray-900' : 'text-white'}`}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           {isMobileMenuOpen ? <X className={isScrolled ? 'text-gray-900' : 'text-white'} /> : <Menu className={isScrolled ? 'text-gray-900' : 'text-white'} />}
@@ -75,16 +106,34 @@ export const Navbar = () => {
         >
           <div className="flex flex-col gap-4">
             {navLinks.map((link) => (
-              <Link 
-                key={link.name} 
-                href={link.href} 
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-gray-600 font-medium hover:text-brand-primary"
-              >
-                {link.name}
-              </Link>
+              link.dropdown ? (
+                <div key={link.name} className="flex flex-col gap-2">
+                  <div className="text-gray-900 font-bold">{link.name}</div>
+                  <div className="flex flex-col gap-2 pl-4 border-l-2 border-gray-100">
+                    {link.items?.map((item) => (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="text-gray-600 font-medium hover:text-brand-primary"
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <Link 
+                  key={link.name} 
+                  href={link.href!} 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-gray-600 font-medium hover:text-brand-primary"
+                >
+                  {link.name}
+                </Link>
+              )
             ))}
-            <Link href="/enroll" onClick={() => setIsMobileMenuOpen(false)} className="bg-brand-primary text-white px-6 py-3 rounded-full font-medium w-full text-center">
+            <Link href="/enroll" onClick={() => setIsMobileMenuOpen(false)} className="bg-brand-primary text-white px-6 py-3 rounded-full font-medium w-full text-center mt-2">
               Enroll Now
             </Link>
           </div>
@@ -101,9 +150,10 @@ export const Footer = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-8">
-              <div 
-                className="h-12 w-56 bg-white" 
-                aria-label={SCHOOL_NAME}
+              <img 
+                src="/logo-w.svg" 
+                alt={SCHOOL_NAME} 
+                className="h-12 w-auto brightness-100"
               />
             </div>
             <p className="text-gray-400 text-sm leading-relaxed mb-8">

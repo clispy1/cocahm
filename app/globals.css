@@ -10,6 +10,19 @@
   --color-brand-dark: #00153b; /* Deep Navy */
   --color-brand-accent: #C5A059; /* Champagne Gold */
   --color-brand-bg: #fdfbf7; /* Warmer, more premium off-white */
+
+  --animate-fade-in-up: fade-in-up 1s ease-out forwards;
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 @layer base {

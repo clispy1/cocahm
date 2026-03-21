@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { motion } from 'motion/react';
 import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
 
 export default function Contact() {
@@ -22,10 +21,7 @@ export default function Contact() {
 
         <div className="grid lg:grid-cols-2 gap-16">
           {/* Contact Info */}
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
+          <div
             className="space-y-8"
           >
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex gap-6 items-start">
@@ -76,13 +72,10 @@ export default function Contact() {
                 <p className="text-gray-600">Saturday: 9:00 AM - 2:00 PM</p>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Contact Form */}
-          <motion.div 
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+          <div
             className="bg-white p-10 rounded-3xl shadow-xl border border-gray-100"
           >
             <h3 className="text-2xl font-serif font-bold mb-8">Send us a Message</h3>
@@ -118,14 +111,14 @@ export default function Contact() {
                 <Send className="w-5 h-5" />
               </button>
             </form>
-          </motion.div>
+          </div>
         </div>
 
         {/* Map Placeholder */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+        <div 
+          
+          
+          
           className="mt-16 rounded-3xl overflow-hidden shadow-lg h-96 bg-gray-200 relative"
         >
           <img 
@@ -140,7 +133,7 @@ export default function Contact() {
               CoCAHM Campus, Accra
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

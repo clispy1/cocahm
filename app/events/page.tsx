@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { motion } from 'motion/react';
 import { Calendar, MapPin, Clock, ArrowRight } from 'lucide-react';
 import { EVENTS } from '@/constants';
 
@@ -23,12 +22,8 @@ export default function Events() {
 
         <div className="grid lg:grid-cols-3 gap-8">
           {EVENTS.map((event, index) => (
-            <motion.div
+            <div
               key={event.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1, duration: 0.6 }}
               className="bg-white rounded-3xl overflow-hidden shadow-lg shadow-gray-200/50 group flex flex-col"
             >
               <div className="relative h-64 overflow-hidden">
@@ -40,10 +35,10 @@ export default function Events() {
                 />
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl shadow-sm">
                   <div className="text-brand-primary font-bold text-lg leading-none">
-                    {event.date.split(' ')[1].replace(',', '')}
+                    {event.date.includes(',') ? event.date.split(' ')[1].replace(',', '') : event.date.split(' ')[0]}
                   </div>
                   <div className="text-gray-600 text-xs font-medium uppercase tracking-wider">
-                    {event.date.split(' ')[0].substring(0, 3)}
+                    {event.date.includes(',') ? event.date.split(' ')[0].substring(0, 3) : event.date.split(' ')[1].substring(0, 3)}
                   </div>
                 </div>
               </div>
@@ -77,7 +72,7 @@ export default function Events() {
                   <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                 </button>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

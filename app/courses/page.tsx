@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { motion } from 'motion/react';
 import Link from 'next/link';
 import { ArrowRight, Clock, Award, CheckCircle2 } from 'lucide-react';
 import { COURSE_CATEGORIES } from '@/constants';
@@ -24,12 +23,8 @@ export default function Courses() {
 
         <div className="space-y-24">
           {COURSE_CATEGORIES.map((category, index) => (
-            <motion.div 
+            <div 
               key={category.id}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.7 }}
               className={`flex flex-col ${index % 2 !== 0 ? 'lg:flex-row-reverse' : 'lg:flex-row'} gap-12 items-center`}
             >
               <div className="w-full lg:w-1/2">
@@ -79,7 +74,7 @@ export default function Courses() {
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { motion } from 'motion/react';
 import { useSearchParams } from 'next/navigation';
 import { ChevronRight } from 'lucide-react';
 import { COURSE_CATEGORIES } from '@/constants';
@@ -38,9 +37,7 @@ function EnrollmentForm() {
           </p>
         </div>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div
           className="bg-white rounded-3xl shadow-xl p-8 md:p-12"
         >
           <form className="space-y-12">
@@ -160,9 +157,7 @@ function EnrollmentForm() {
                 </div>
 
                 {activeCategory && (
-                  <motion.div 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
+                  <div
                     className="pt-4 border-t border-gray-100"
                   >
                     <label className="block text-sm font-medium text-gray-700 mb-4">Select Specific Course & Duration</label>
@@ -189,7 +184,7 @@ function EnrollmentForm() {
                         </label>
                       ))}
                     </div>
-                  </motion.div>
+                  </div>
                 )}
               </div>
             </section>
@@ -246,10 +241,10 @@ function EnrollmentForm() {
                   </label>
                 </div>
                 {hasExperience && (
-                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">If Yes, state:</label>
                     <textarea rows={2} className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all"></textarea>
-                  </motion.div>
+                  </div>
                 )}
               </div>
             </section>
@@ -274,10 +269,10 @@ function EnrollmentForm() {
                     </label>
                   </div>
                   {hasDisability && (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                    <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">If Yes, state:</label>
                       <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                    </motion.div>
+                    </div>
                   )}
                 </div>
 
@@ -294,10 +289,10 @@ function EnrollmentForm() {
                     </label>
                   </div>
                   {hasAllergy && (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                    <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">If Yes, state:</label>
                       <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
-                    </motion.div>
+                    </div>
                   )}
                 </div>
               </div>
@@ -323,7 +318,7 @@ function EnrollmentForm() {
               </button>
             </div>
           </form>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

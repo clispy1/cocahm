@@ -81,7 +81,10 @@ export default function About() {
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-950">The CoCAHM Journey</h2>
         </div>
         
-        <div className="relative border-l-2 border-brand-primary/20 ml-4 md:ml-1/2 md:left-1/2 md:-translate-x-1/2 space-y-12">
+        <div className="relative space-y-12">
+          {/* The vertical line */}
+          <div className="absolute top-0 bottom-0 left-4 md:left-1/2 w-0.5 bg-brand-primary/20 md:-translate-x-1/2"></div>
+          
           {timeline.map((item, index) => (
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
@@ -89,10 +92,13 @@ export default function About() {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               key={index} 
-              className={`relative flex flex-col md:flex-row items-start ${index % 2 === 0 ? 'md:flex-row-reverse' : ''} gap-8`}
+              className={`relative flex flex-col md:flex-row items-start ${index % 2 === 0 ? 'md:flex-row-reverse' : ''} gap-8 md:gap-0`}
             >
-              <div className="absolute -left-[9px] md:left-1/2 md:-translate-x-1/2 w-4 h-4 rounded-full bg-brand-primary ring-4 ring-white" />
-              <div className={`w-full md:w-1/2 pl-8 md:pl-0 ${index % 2 === 0 ? 'md:pl-12' : 'md:pr-12 md:text-right'}`}>
+              {/* The dot */}
+              <div className="absolute left-4 md:left-1/2 w-4 h-4 rounded-full bg-brand-primary ring-4 ring-white -translate-x-1/2 mt-1.5 z-10" />
+              
+              {/* The content */}
+              <div className={`w-full md:w-1/2 pl-12 md:pl-0 ${index % 2 === 0 ? 'md:pl-12' : 'md:pr-12 md:text-right'}`}>
                 <span className="text-brand-primary font-bold text-xl mb-2 block">{item.year}</span>
                 <h3 className="text-2xl font-serif font-bold text-gray-950 mb-3">{item.title}</h3>
                 <p className="text-gray-800 leading-relaxed">{item.desc}</p>

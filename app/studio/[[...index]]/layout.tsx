@@ -1,0 +1,16 @@
+export const metadata = {
+  title: 'Sanity Studio - CoCAHM',
+  description: 'Content Management Studio for CoCAHM',
+}
+
+export default function StudioLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <div style={{ margin: 0, padding: 0, height: '100vh', width: '100vw' }}>
+      {children}
+    </div>
+  )
+}

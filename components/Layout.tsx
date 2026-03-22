@@ -28,6 +28,8 @@ export const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isHome]);
 
+  if (pathname.startsWith('/studio')) return null;
+
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
@@ -146,6 +148,9 @@ export const Navbar = () => {
 };
 
 export const Footer = () => {
+  const pathname = usePathname();
+  if (pathname.startsWith('/studio')) return null;
+
   return (
     <footer className="bg-gray-950 text-white pt-24 pb-12 px-6">
       <div className="max-w-7xl mx-auto">

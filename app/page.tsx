@@ -214,8 +214,8 @@ const CourseCategoryCard: React.FC<CourseCategoryProps> = ({ category, index }) 
             </div>
           ))}
         </div>
-        <Link href={`/enroll?category=${category.id}`} className="flex items-center gap-2 text-brand-primary font-semibold group/btn mt-auto">
-          Enroll in {category.title}
+        <Link href={`/courses/${category.id}`} className="flex items-center gap-2 text-brand-primary font-semibold group/btn mt-auto">
+          View Program Details
           <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
         </Link>
       </div>

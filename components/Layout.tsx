@@ -37,6 +37,8 @@ export const Navbar = () => {
       dropdown: true,
       items: [
         { name: 'Student Life', href: '/student-life' },
+        { name: 'Faculty', href: '/faculty' },
+        { name: 'Alumni', href: '/alumni' },
         { name: 'Blog', href: '/blog' },
         { name: 'Events', href: '/events' },
       ]
@@ -177,6 +179,8 @@ export const Footer = () => {
             <ul className="space-y-4 text-gray-400 text-sm">
               <li><Link href="/about" className="hover:text-white transition-colors">About CoCAHM</Link></li>
               <li><Link href="/courses" className="hover:text-white transition-colors">Our Courses</Link></li>
+              <li><Link href="/faculty" className="hover:text-white transition-colors">Our Faculty</Link></li>
+              <li><Link href="/alumni" className="hover:text-white transition-colors">Alumni Success</Link></li>
               <li><Link href="/events" className="hover:text-white transition-colors">Events</Link></li>
               <li><Link href="/student-life" className="hover:text-white transition-colors">Student Life</Link></li>
               <li><Link href="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>

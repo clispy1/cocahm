@@ -175,10 +175,10 @@ export default function Courses() {
                   </div>
 
                   <Link 
-                    href={`/enroll?category=${category.id}`} 
+                    href={`/courses/${category.id}`} 
                     className="inline-flex items-center justify-center gap-2 bg-brand-primary text-white px-8 py-4 rounded-xl font-medium hover:bg-opacity-90 transition-all shadow-lg shadow-brand-primary/30 group w-full sm:w-auto"
                   >
-                    Apply for this Program
+                    View Program Details
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>

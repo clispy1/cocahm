@@ -144,7 +144,7 @@ export default function Contact() {
           className="mt-16 rounded-3xl overflow-hidden shadow-lg h-96 bg-gray-200 relative"
         >
           <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127072.21689714878!2d-0.2505505058593749!3d5.591208700000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf9084b2b7a773%3A0xbed14ed8650e2dd3!2sAccra%2C%20Ghana!5e0!3m2!1sen!2sus!4v1710000000000!5m2!1sen!2sus" 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3970.8169446097536!2d-0.2009281!3d5.5940468999999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf9b1940e096fb%3A0x7180eb2d8facf2ea!2sCollege%20of%20Culinary%20Arts%20and%20Hospitality%20Management%20(CoCAHM)!5e0!3m2!1sen!2sgh!4v1774218433524!5m2!1sen!2sgh" 
             width="100%" 
             height="100%" 
             style={{ border: 0 }} 

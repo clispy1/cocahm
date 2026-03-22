@@ -9,7 +9,7 @@ import {
   ChefHat, Briefcase, GraduationCap, Building, Calendar, User, Quote
 } from 'lucide-react';
 import { 
-  SCHOOL_NAME, FULL_NAME, TAGLINE, SUB_TAGLINE, COURSE_CATEGORIES, FEATURES, TESTIMONIALS, GALLERY_IMAGES 
+  SCHOOL_NAME, FULL_NAME, TAGLINE, SUB_TAGLINE, COURSE_CATEGORIES, FEATURES, TESTIMONIALS, GALLERY_IMAGES, EVENTS 
 } from '@/constants';
 import { BLOG_POSTS } from '@/app/blog/data';
 
@@ -462,6 +462,76 @@ const LatestBlog = () => {
   );
 };
 
+const UpcomingEvent = () => {
+  const nextEvent = EVENTS[0];
+  if (!nextEvent) return null;
+
+  return (
+    <section className="py-24 bg-brand-bg relative overflow-hidden">
+      <div className="absolute inset-0 bg-brand-primary/5" />
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="relative h-[400px] lg:h-[500px] rounded-3xl overflow-hidden shadow-2xl">
+            <Image 
+              src={nextEvent.image} 
+              alt={nextEvent.title} 
+              fill
+              referrerPolicy="no-referrer"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute bottom-6 left-6 right-6">
+              <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full inline-flex items-center gap-2 text-sm font-bold text-brand-primary mb-3">
+                <Calendar className="w-4 h-4" />
+                Upcoming Event
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h2 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-6">
+              {nextEvent.title}
+            </h2>
+            <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+              {nextEvent.description}
+            </p>
+            
+            <div className="space-y-4 mb-10">
+              <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                <div className="w-12 h-12 bg-brand-primary/10 rounded-full flex items-center justify-center text-brand-primary shrink-0">
+                  <Calendar className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="text-sm text-gray-500 font-medium uppercase tracking-wider">Date & Time</div>
+                  <div className="font-bold text-gray-900">{nextEvent.date} • {nextEvent.time}</div>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                <div className="w-12 h-12 bg-brand-primary/10 rounded-full flex items-center justify-center text-brand-primary shrink-0">
+                  <Building className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="text-sm text-gray-500 font-medium uppercase tracking-wider">Location</div>
+                  <div className="font-bold text-gray-900">{nextEvent.location}</div>
+                </div>
+              </div>
+            </div>
+            
+            <Link 
+              href={`/events?id=${nextEvent.id}`}
+              className="inline-flex items-center gap-2 bg-brand-primary text-white px-8 py-4 rounded-full font-bold hover:bg-opacity-90 transition-all shadow-lg shadow-brand-primary/30 group"
+            >
+              Learn More About Event
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 export default function Home() {
   useEffect(() => {
     if (window.location.hash) {
@@ -482,6 +552,7 @@ export default function Home() {
       <FastFacts />
       <About />
       <Courses />
+      <UpcomingEvent />
       <Features />
       <Gallery />
       <Testimonials />

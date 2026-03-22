@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from 'react';
+import Image from 'next/image';
 import { GALLERY_IMAGES } from '@/constants';
 import { motion } from 'motion/react';
 import { Trophy, Clock, Coffee, BookOpen, ChefHat, Utensils } from 'lucide-react';
@@ -145,11 +146,12 @@ export default function StudentLife() {
               viewport={{ once: true }}
               className="md:col-span-2 md:row-span-2 relative overflow-hidden rounded-2xl group bg-gray-100"
             >
-              <img 
+              <Image 
                 src="/6_556a25cfb5d4c1a0c5fa5912deb0c5f70f622d3b-3975x5963.jpg" 
                 alt="Student Life Featured" 
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                referrerPolicy="no-referrer"
+                fill
+                className="object-cover group-hover:scale-110 transition-transform duration-700"
+                sizes="(max-width: 768px) 100vw, 50vw"
               />
               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </motion.div>

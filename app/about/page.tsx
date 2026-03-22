@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import Image from 'next/image';
 import { Award, BookOpen, Globe, Users, CheckCircle2, ChefHat, Utensils, Coffee } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -52,10 +53,12 @@ export default function About() {
       {/* Hero Section */}
       <section className="relative px-6 py-20 md:py-32 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img 
+          <Image 
             src="/3_233174e60172ae64f15528d5df5907228b366a39-6426x4284.jpg" 
             alt="Chefs cooking in a professional kitchen" 
-            className="w-full h-full object-cover opacity-20"
+            fill
+            className="object-cover opacity-20"
+            priority
           />
           <div className="absolute inset-0 bg-gradient-to-b from-brand-bg/80 to-brand-bg"></div>
         </div>

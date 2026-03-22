@@ -9,14 +9,39 @@ import { motion, AnimatePresence } from 'motion/react';
 function EnrollmentForm() {
   const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedCourse, setSelectedCourse] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Conditional field states
-  const [requiresHostel, setRequiresHostel] = useState<boolean | null>(null);
-  const [hasExperience, setHasExperience] = useState<boolean | null>(null);
-  const [hasDisability, setHasDisability] = useState<boolean | null>(null);
-  const [hasAllergy, setHasAllergy] = useState<boolean | null>(null);
+  // Form data state
+  const [formData, setFormData] = useState({
+    surname: '',
+    firstName: '',
+    otherNames: '',
+    dob: '',
+    pob: '',
+    gender: '',
+    nationality: '',
+    phone: '',
+    email: '',
+    address: '',
+    emergencyContact: '',
+    guardianName: '',
+    guardianPhone: '',
+    guardianResidence: '',
+    lastSchool: '',
+    educationLevel: '',
+    programCategory: '',
+    program: '',
+    session: '',
+    accommodation: '',
+    referral: '',
+    experience: '',
+    experienceDetails: '',
+    disability: '',
+    disabilityDetails: '',
+    allergies: '',
+    allergyDetails: '',
+  });
 
   // FAQ State
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
@@ -25,12 +50,10 @@ function EnrollmentForm() {
     window.scrollTo(0, 0);
     const categoryParam = searchParams.get('category');
     if (categoryParam) {
-      setSelectedCategory(categoryParam);
+      setFormData(prev => ({ ...prev, programCategory: categoryParam }));
       setCurrentStep(2); // Jump to course selection if category is pre-filled
     }
   }, [searchParams]);
-
-  const activeCategory = COURSE_CATEGORIES.find(c => c.id === selectedCategory);
 
   const nextStep = () => {
     setCurrentStep(prev => Math.min(prev + 1, 3));
@@ -39,6 +62,23 @@ function EnrollmentForm() {
   
   const prevStep = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (currentStep !== 3) return;
+    
+    setIsSubmitting(true);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    setIsSubmitting(false);
+    setIsSubmitted(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -81,84 +121,130 @@ function EnrollmentForm() {
         </div>
 
         <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 mb-24">
-          <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
-            
-            {/* Step 1: Personal Details */}
-            {currentStep === 1 && (
-              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                <h3 className="text-2xl font-serif font-bold mb-8 border-b border-gray-100 pb-4 text-gray-950">Personal Details</h3>
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 mb-2">Surname</label>
-                    <input type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 mb-2">First Name</label>
-                    <input type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 mb-2">Other Names</label>
-                    <input type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+          {isSubmitted ? (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-12"
+            >
+              <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8">
+                <CheckCircle2 className="w-12 h-12 text-green-600" />
+              </div>
+              <h2 className="text-3xl font-serif font-bold text-gray-900 mb-4">Application Received!</h2>
+              <p className="text-gray-600 max-w-md mx-auto mb-10 text-lg">
+                Thank you for applying to CoCAHM, {formData.firstName}. Your application reference is <span className="font-mono font-bold text-brand-primary">#ADM-2026-{Math.floor(1000 + Math.random() * 9000)}</span>.
+              </p>
+              <div className="bg-gray-50 p-8 rounded-2xl border border-gray-100 mb-10 text-left max-w-lg mx-auto">
+                <h4 className="font-bold text-gray-900 mb-4">Next Steps:</h4>
+                <ul className="space-y-4 text-gray-600">
+                  <li className="flex gap-3">
+                    <span className="w-6 h-6 bg-brand-primary text-white rounded-full flex items-center justify-center text-xs shrink-0 mt-0.5">1</span>
+                    <span>Our admissions team will review your details within 48 hours.</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="w-6 h-6 bg-brand-primary text-white rounded-full flex items-center justify-center text-xs shrink-0 mt-0.5">2</span>
+                    <span>You will receive an email with instructions for the entrance interview.</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="w-6 h-6 bg-brand-primary text-white rounded-full flex items-center justify-center text-xs shrink-0 mt-0.5">3</span>
+                    <span>Prepare your academic transcripts and identification documents.</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button 
+                  onClick={() => window.location.href = '/'}
+                  className="px-8 py-4 bg-brand-primary text-white rounded-xl font-bold hover:bg-opacity-90 transition-all shadow-lg shadow-brand-primary/30"
+                >
+                  Return to Home
+                </button>
+                <button 
+                  onClick={() => window.print()}
+                  className="px-8 py-4 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-all"
+                >
+                  Print Application
+                </button>
+              </div>
+            </motion.div>
+          ) : (
+            <form className="space-y-8" onSubmit={handleSubmit}>
+              
+              {/* Step 1: Personal Details */}
+              {currentStep === 1 && (
+                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                  <h3 className="text-2xl font-serif font-bold mb-8 border-b border-gray-100 pb-4 text-gray-950">Personal Details</h3>
+                  <div className="grid md:grid-cols-3 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-800 mb-2">Surname</label>
+                      <input required name="surname" value={formData.surname} onChange={handleInputChange} type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-800 mb-2">First Name</label>
+                      <input required name="firstName" value={formData.firstName} onChange={handleInputChange} type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-800 mb-2">Other Names</label>
+                      <input name="otherNames" value={formData.otherNames} onChange={handleInputChange} type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-800 mb-2">Date of Birth</label>
+                      <input required name="dob" value={formData.dob} onChange={handleInputChange} type="date" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-800 mb-2">Place of Birth</label>
+                      <input required name="pob" value={formData.pob} onChange={handleInputChange} type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-800 mb-2">Gender</label>
+                      <select required name="gender" value={formData.gender} onChange={handleInputChange} className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all bg-white text-gray-900">
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-800 mb-2">Nationality</label>
+                      <input required name="nationality" value={formData.nationality} onChange={handleInputChange} type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-800 mb-2">Phone Number</label>
+                      <input required name="phone" value={formData.phone} onChange={handleInputChange} type="tel" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-800 mb-2">Email</label>
+                      <input required name="email" value={formData.email} onChange={handleInputChange} type="email" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-800 mb-2">Residential Address</label>
+                      <input required name="address" value={formData.address} onChange={handleInputChange} type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-800 mb-2">Emergency Contact</label>
+                      <input required name="emergencyContact" value={formData.emergencyContact} onChange={handleInputChange} type="text" placeholder="Name & Number" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 mb-2">Date of Birth</label>
-                    <input type="date" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+                  <h4 className="font-medium text-gray-950 mt-8 mb-4">Guardian Information</h4>
+                  <div className="grid md:grid-cols-3 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-800 mb-2">Guardian's Name</label>
+                      <input required name="guardianName" value={formData.guardianName} onChange={handleInputChange} type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-800 mb-2">Guardian's Number</label>
+                      <input required name="guardianPhone" value={formData.guardianPhone} onChange={handleInputChange} type="tel" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-800 mb-2">Guardian's Residence</label>
+                      <input required name="guardianResidence" value={formData.guardianResidence} onChange={handleInputChange} type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 mb-2">Place of Birth</label>
-                    <input type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 mb-2">Gender</label>
-                    <select className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all bg-white text-gray-900">
-                      <option value="">Select Gender</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 mb-2">Nationality</label>
-                    <input type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 mb-2">Phone Number</label>
-                    <input type="tel" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 mb-2">Email</label>
-                    <input type="email" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-800 mb-2">Residential Address</label>
-                    <input type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 mb-2">Emergency Contact</label>
-                    <input type="text" placeholder="Name & Number" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
-                  </div>
-                </div>
-
-                <h4 className="font-medium text-gray-950 mt-8 mb-4">Guardian Information</h4>
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 mb-2">Guardian's Name</label>
-                    <input type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 mb-2">Guardian's Number</label>
-                    <input type="tel" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 mb-2">Guardian's Residence</label>
-                    <input type="text" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
-                  </div>
-                </div>
-              </motion.div>
-            )}
+                </motion.div>
+              )}
 
             {/* Step 2: Course Selection & Accommodation */}
             {currentStep === 2 && (
@@ -171,17 +257,14 @@ function EnrollmentForm() {
                       {COURSE_CATEGORIES.map(category => (
                         <label 
                           key={category.id} 
-                          className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${selectedCategory === category.id ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-brand-primary/50'}`}
+                          className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${formData.programCategory === category.id ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-brand-primary/50'}`}
                         >
                           <input 
                             type="radio" 
-                            name="category" 
+                            name="programCategory" 
                             value={category.id}
-                            checked={selectedCategory === category.id}
-                            onChange={(e) => {
-                              setSelectedCategory(e.target.value);
-                              setSelectedCourse('');
-                            }}
+                            checked={formData.programCategory === category.id}
+                            onChange={handleInputChange}
                             className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300"
                           />
                           <span className="ml-3 font-medium text-gray-900">{category.title}</span>
@@ -190,22 +273,22 @@ function EnrollmentForm() {
                     </div>
                   </div>
 
-                  {activeCategory && (
+                  {formData.programCategory && (
                     <div className="pt-4 border-t border-gray-100">
                       <label className="block text-sm font-medium text-gray-700 mb-4">Select Specific Course & Duration</label>
                       <div className="space-y-3">
-                        {activeCategory.courses.map(course => (
+                        {COURSE_CATEGORIES.find(c => c.id === formData.programCategory)?.courses.map(course => (
                           <label 
                             key={course.id} 
-                            className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${selectedCourse === course.id ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-brand-primary/50'}`}
+                            className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${formData.program === course.id ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-brand-primary/50'}`}
                           >
                             <div className="flex items-center">
                               <input 
                                 type="radio" 
-                                name="course" 
+                                name="program" 
                                 value={course.id}
-                                checked={selectedCourse === course.id}
-                                onChange={(e) => setSelectedCourse(e.target.value)}
+                                checked={formData.program === course.id}
+                                onChange={handleInputChange}
                                 className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300"
                               />
                               <span className="ml-3 font-medium text-gray-900">{course.name}</span>
@@ -224,11 +307,11 @@ function EnrollmentForm() {
                     <p className="text-sm text-gray-500 mb-4">Hostel facilities are available for students who wish to stay on campus (billed per 3 months).</p>
                     <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                       <label className="flex items-center cursor-pointer">
-                        <input type="radio" name="requiresHostel" checked={requiresHostel === true} onChange={() => setRequiresHostel(true)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                        <input type="radio" name="accommodation" value="yes" checked={formData.accommodation === 'yes'} onChange={handleInputChange} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
                         <span className="ml-2 text-gray-700">Yes, I need a hostel</span>
                       </label>
                       <label className="flex items-center cursor-pointer">
-                        <input type="radio" name="requiresHostel" checked={requiresHostel === false} onChange={() => setRequiresHostel(false)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                        <input type="radio" name="accommodation" value="no" checked={formData.accommodation === 'no'} onChange={handleInputChange} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
                         <span className="ml-2 text-gray-700">No, I will commute from home</span>
                       </label>
                     </div>
@@ -246,11 +329,11 @@ function EnrollmentForm() {
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Last School Attended</label>
-                      <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                      <input required name="lastSchool" value={formData.lastSchool} onChange={handleInputChange} type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Level of Education</label>
-                      <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                      <input required name="educationLevel" value={formData.educationLevel} onChange={handleInputChange} type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                     </div>
                   </div>
                   
@@ -258,18 +341,18 @@ function EnrollmentForm() {
                     <label className="block text-sm font-medium text-gray-900 mb-3">Do you have prior experience / education related to culinary arts?</label>
                     <div className="flex gap-6 mb-4">
                       <label className="flex items-center cursor-pointer">
-                        <input type="radio" name="hasExperience" checked={hasExperience === true} onChange={() => setHasExperience(true)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                        <input type="radio" name="experience" value="yes" checked={formData.experience === 'yes'} onChange={handleInputChange} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
                         <span className="ml-2 text-gray-700">Yes</span>
                       </label>
                       <label className="flex items-center cursor-pointer">
-                        <input type="radio" name="hasExperience" checked={hasExperience === false} onChange={() => setHasExperience(false)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                        <input type="radio" name="experience" value="no" checked={formData.experience === 'no'} onChange={handleInputChange} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
                         <span className="ml-2 text-gray-700">No</span>
                       </label>
                     </div>
-                    {hasExperience && (
+                    {formData.experience === 'yes' && (
                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
                         <label className="block text-sm font-medium text-gray-700 mb-2 mt-4">If Yes, state details:</label>
-                        <textarea rows={2} className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all"></textarea>
+                        <textarea name="experienceDetails" value={formData.experienceDetails} onChange={handleInputChange} rows={2} className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900"></textarea>
                       </motion.div>
                     )}
                   </div>
@@ -279,18 +362,18 @@ function EnrollmentForm() {
                       <label className="block text-sm font-medium text-gray-900 mb-3">Do you have any disabilities?</label>
                       <div className="flex gap-6 mb-4">
                         <label className="flex items-center cursor-pointer">
-                          <input type="radio" name="hasDisability" checked={hasDisability === true} onChange={() => setHasDisability(true)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                          <input type="radio" name="disability" value="yes" checked={formData.disability === 'yes'} onChange={handleInputChange} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
                           <span className="ml-2 text-gray-700">Yes</span>
                         </label>
                         <label className="flex items-center cursor-pointer">
-                          <input type="radio" name="hasDisability" checked={hasDisability === false} onChange={() => setHasDisability(false)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                          <input type="radio" name="disability" value="no" checked={formData.disability === 'no'} onChange={handleInputChange} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
                           <span className="ml-2 text-gray-700">No</span>
                         </label>
                       </div>
-                      {hasDisability && (
+                      {formData.disability === 'yes' && (
                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
                           <label className="block text-sm font-medium text-gray-700 mb-2 mt-4">If Yes, state:</label>
-                          <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                          <input name="disabilityDetails" value={formData.disabilityDetails} onChange={handleInputChange} type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                         </motion.div>
                       )}
                     </div>
@@ -299,18 +382,18 @@ function EnrollmentForm() {
                       <label className="block text-sm font-medium text-gray-900 mb-3">Do you have any allergies?</label>
                       <div className="flex gap-6 mb-4">
                         <label className="flex items-center cursor-pointer">
-                          <input type="radio" name="hasAllergy" checked={hasAllergy === true} onChange={() => setHasAllergy(true)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                          <input type="radio" name="allergies" value="yes" checked={formData.allergies === 'yes'} onChange={handleInputChange} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
                           <span className="ml-2 text-gray-700">Yes</span>
                         </label>
                         <label className="flex items-center cursor-pointer">
-                          <input type="radio" name="hasAllergy" checked={hasAllergy === false} onChange={() => setHasAllergy(false)} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                          <input type="radio" name="allergies" value="no" checked={formData.allergies === 'no'} onChange={handleInputChange} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
                           <span className="ml-2 text-gray-700">No</span>
                         </label>
                       </div>
-                      {hasAllergy && (
+                      {formData.allergies === 'yes' && (
                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
                           <label className="block text-sm font-medium text-gray-700 mb-2 mt-4">If Yes, state:</label>
-                          <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all" />
+                          <input name="allergyDetails" value={formData.allergyDetails} onChange={handleInputChange} type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                         </motion.div>
                       )}
                     </div>
@@ -352,15 +435,26 @@ function EnrollmentForm() {
                 </button>
               ) : (
                 <button 
-                  type="button" 
-                  className="bg-green-600 text-white px-8 py-3 rounded-xl font-medium hover:bg-green-700 transition-all flex items-center gap-2 shadow-lg shadow-green-600/30"
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="bg-green-600 text-white px-8 py-3 rounded-xl font-medium hover:bg-green-700 transition-all flex items-center gap-2 shadow-lg shadow-green-600/30 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  Submit Application
-                  <CheckCircle2 className="w-5 h-5" />
+                  {isSubmitting ? (
+                    <>
+                      <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      Submit Application
+                      <CheckCircle2 className="w-5 h-5" />
+                    </>
+                  )}
                 </button>
               )}
             </div>
           </form>
+          )}
         </div>
 
         {/* Admissions FAQ */}

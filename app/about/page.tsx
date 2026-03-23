@@ -152,6 +152,30 @@ export default function About() {
         </section>
       )}
 
+      {/* Portrait Images Section */}
+      <section className="py-16 px-6 max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-xl relative">
+            <Image 
+              src="https://picsum.photos/seed/portrait1/600/800" 
+              alt="Portrait 1" 
+              fill
+              className="object-cover"
+              referrerPolicy="no-referrer"
+            />
+          </div>
+          <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-xl relative">
+            <Image 
+              src="https://picsum.photos/seed/portrait2/600/800" 
+              alt="Portrait 2" 
+              fill
+              className="object-cover"
+              referrerPolicy="no-referrer"
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Interactive Timeline Section */}
       <section className="max-w-5xl mx-auto px-6 py-16 md:py-24">
         <div className="text-center mb-16">

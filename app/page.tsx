@@ -347,14 +347,14 @@ const Gallery = ({ images }: { images: any[] }) => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {displayImages.map((img, index) => (
             <div
-              key={index}
+              key={img._id || index}
               className={`relative overflow-hidden rounded-2xl group bg-gray-100 ${
                 index === 0 ? 'md:col-span-2 md:row-span-2 aspect-square' : 
                 index === 3 ? 'md:col-span-2 aspect-[2/1]' : 'aspect-square'
               }`}
             >
               <Image 
-                src={img.image?.asset ? urlFor(img.image).url() : img.image} 
+                src={img.image?.asset ? urlFor(img.image).url() : (img.image || "https://picsum.photos/seed/gallery/800/600")} 
                 alt={img.caption || `Gallery ${index}`} 
                 fill
                 className="object-cover group-hover:scale-110 transition-transform duration-700"
@@ -362,7 +362,7 @@ const Gallery = ({ images }: { images: any[] }) => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                 <span className="text-white font-medium opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                  {img.category || (index % 2 === 0 ? 'Culinary Arts' : 'Pastry & Baking')}
+                  {img.category || 'Gallery'}
                 </span>
               </div>
             </div>

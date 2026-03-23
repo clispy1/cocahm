@@ -50,5 +50,12 @@ export default defineType({
         hotspot: true,
       },
     }),
+    defineField({
+      name: 'featured',
+      title: 'Featured Event',
+      type: 'boolean',
+      description: 'Toggle this to highlight this event on the homepage.',
+      initialValue: false,
+    }),
   ],
 })

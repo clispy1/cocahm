@@ -91,5 +91,29 @@ export default defineType({
       description: 'Select up to 3 related posts to show at the bottom of the article.',
       validation: (Rule) => Rule.max(3),
     }),
+    defineField({
+      name: 'seoTitle',
+      title: 'SEO Title',
+      type: 'string',
+      description: 'Optional: Title used for search engines and browser tabs. If left blank, the main title will be used.',
+      validation: (Rule) => Rule.max(60).warning('Longer titles may be truncated by search engines'),
+    }),
+    defineField({
+      name: 'seoDescription',
+      title: 'SEO Description',
+      type: 'text',
+      description: 'Optional: Short description for search engine results. If left blank, the excerpt will be used.',
+      validation: (Rule) => Rule.max(160).warning('Longer descriptions may be truncated by search engines'),
+    }),
+    defineField({
+      name: 'keywords',
+      title: 'Keywords',
+      type: 'array',
+      of: [{ type: 'string' }],
+      description: 'Add keywords related to this post for SEO.',
+      options: {
+        layout: 'tags',
+      },
+    }),
   ],
 })

@@ -6,8 +6,10 @@ import Image from 'next/image';
 import { useRef } from 'react';
 import { 
   Utensils, Flower2, Award, Users, ArrowRight, CheckCircle2,
-  ChefHat, Briefcase, GraduationCap, Building, Calendar, User, Quote
+  ChefHat, Briefcase, GraduationCap, Building, Calendar, User, Quote,
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   SCHOOL_NAME, FULL_NAME, TAGLINE, SUB_TAGLINE, COURSE_CATEGORIES, FEATURES, TESTIMONIALS, GALLERY_IMAGES, EVENTS 
 } from '@/constants';
@@ -114,6 +116,34 @@ const FastFacts = () => {
   );
 };
 
+const QuoteSection = ({ data }: { data: any }) => {
+  return (
+    <section className="py-20 bg-gray-900 text-white relative overflow-hidden">
+      <div className="absolute inset-0 opacity-10">
+        <Image 
+          src="https://picsum.photos/seed/culinary-quote/1920/1080" 
+          alt="Background" 
+          fill 
+          className="object-cover"
+        />
+      </div>
+      <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
+        <Quote className="w-10 h-10 text-brand-primary mx-auto mb-6 opacity-40" />
+        <h2 className="text-xl md:text-2xl lg:text-3xl font-serif italic leading-relaxed mb-8">
+          "{data?.welcomeMessage || 'We are not just churning out cooks, we are churning out individuals with transferable skills'}"
+        </h2>
+        <div className="flex items-center justify-center gap-4">
+          <div className="w-8 h-[1px] bg-brand-primary/50" />
+          <p className="uppercase tracking-[0.3em] text-[10px] font-bold text-brand-primary">
+            Our Philosophy
+          </p>
+          <div className="w-8 h-[1px] bg-brand-primary/50" />
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const About = ({ data }: { data: any }) => {
   return (
     <section id="about" className="py-24 px-6 bg-brand-bg">
@@ -126,12 +156,6 @@ const About = ({ data }: { data: any }) => {
               className="w-full h-full object-cover absolute inset-0"
               referrerPolicy="no-referrer"
             />
-          </div>
-          <div
-            className="absolute -bottom-8 -right-8 bg-white p-8 rounded-2xl shadow-xl max-w-xs z-10 mx-6 lg:mx-0"
-          >
-            <p className="text-brand-primary font-serif italic text-xl mb-2">"{data?.welcomeMessage || 'We are not just churning out cooks, we are churning out individuals with transferable skills'}"</p>
-            <p className="text-gray-500 text-sm">— CoCAHM</p>
           </div>
         </div>
 
@@ -179,6 +203,7 @@ const About = ({ data }: { data: any }) => {
     </section>
   );
 };
+
 
 interface CourseCategoryProps {
   category: any;
@@ -350,41 +375,67 @@ const Gallery = ({ images }: { images: any[] }) => {
 
 const Testimonials = ({ alumni }: { alumni: any[] }) => {
   const displayTestimonials = alumni && alumni.length > 0 ? alumni : TESTIMONIALS;
+  
+  // Duplicate testimonials to ensure smooth infinite loop
+  const duplicatedTestimonials = [...displayTestimonials, ...displayTestimonials, ...displayTestimonials];
 
   return (
-    <section className="py-24 px-6 bg-brand-bg overflow-hidden">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
+    <section className="py-24 bg-brand-bg overflow-hidden relative">
+      <div className="max-w-7xl mx-auto px-6 mb-16">
+        <div className="text-center">
           <span className="text-brand-primary font-medium tracking-widest text-xs uppercase mb-4 block">Alumni Success</span>
           <h2 className="text-4xl md:text-5xl font-serif mb-6">Where Are They Now?</h2>
           <p className="text-gray-500 max-w-2xl mx-auto">
             Our graduates go on to lead kitchens, start successful businesses, and shape the future of hospitality globally.
           </p>
         </div>
-        <div className="grid md:grid-cols-3 gap-8">
-          {displayTestimonials.map((t, index) => (
+      </div>
+
+      <div className="relative flex overflow-hidden">
+        <motion.div
+          animate={{
+            x: [0, -100 * displayTestimonials.length + "%"],
+          }}
+          transition={{
+            x: {
+              repeat: Infinity,
+              repeatType: "loop",
+              duration: displayTestimonials.length * 10, // Adjust speed based on item count
+              ease: "linear",
+            },
+          }}
+          className="flex gap-8 px-4"
+          style={{ width: "fit-content" }}
+        >
+          {duplicatedTestimonials.map((t, index) => (
             <div
               key={index}
-              className="p-8 rounded-3xl bg-white shadow-sm border border-gray-100 relative group hover:shadow-xl transition-all duration-500 flex flex-col"
+              className="w-[300px] md:w-[400px] shrink-0 p-8 rounded-3xl bg-white shadow-sm border border-gray-100 relative group hover:shadow-xl transition-all duration-500 flex flex-col"
             >
               <div className="absolute top-8 right-8 text-brand-primary/10 group-hover:text-brand-primary/20 transition-colors">
-                <Quote className="w-16 h-16" />
+                <Quote className="w-12 h-12" />
               </div>
-              <p className="text-gray-700 italic mb-8 relative z-10 flex-grow">
+              <p className="text-gray-700 italic mb-8 relative z-10 flex-grow line-clamp-4">
                 "{t.story || t.content}"
               </p>
               <div className="flex items-center gap-4 relative z-10 border-t border-gray-100 pt-6">
                 <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-200 shrink-0 relative">
-                  <Image src={t.image?.asset ? urlFor(t.image).url() : (t.image || "https://picsum.photos/seed/alumni/200/200")} alt={t.name} fill className="object-cover" referrerPolicy="no-referrer" />
+                  <Image 
+                    src={t.image?.asset ? urlFor(t.image).url() : (t.image || "https://picsum.photos/seed/alumni/200/200")} 
+                    alt={t.name} 
+                    fill 
+                    className="object-cover" 
+                    referrerPolicy="no-referrer" 
+                  />
                 </div>
                 <div>
-                  <h4 className="font-bold text-gray-900">{t.name}</h4>
-                  <p className="text-sm text-brand-primary font-medium">{t.role}</p>
+                  <h4 className="font-bold text-gray-900 line-clamp-1">{t.name}</h4>
+                  <p className="text-sm text-brand-primary font-medium line-clamp-1">{t.role}</p>
                 </div>
               </div>
             </div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
@@ -589,6 +640,7 @@ export default function Home() {
       <UpcomingEvent events={events} />
       <Features />
       <Gallery images={galleryImages} />
+      <QuoteSection data={homeData} />
       <Testimonials alumni={alumni} />
       <LatestBlog posts={posts} />
     </>

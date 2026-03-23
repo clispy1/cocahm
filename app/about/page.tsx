@@ -126,7 +126,7 @@ export default function About() {
 
       {/* Our Story / Mission / Vision */}
       {(aboutData?.story || aboutData?.missionStatement || aboutData?.visionStatement) && (
-        <section className="bg-white py-20 md:py-32">
+        <section className="bg-white py-20 md:py-32 flex flex-column gap-6 md:flex-row ">
           <div className="max-w-4xl mx-auto px-6">
             {aboutData.missionStatement && (
               <div className="mb-12">
@@ -149,12 +149,8 @@ export default function About() {
               </div>
             )}
           </div>
-        </section>
-      )}
-
-      {/* Portrait Images Section */}
-      <section className="py-16 px-6 max-w-7xl mx-auto">
-        <div className="grid md:grid-cols-2 gap-8">
+          
+          <div className="grid md:grid-cols-2 gap-8">
           <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-xl relative">
             <Image 
               src="https://picsum.photos/seed/portrait1/600/800" 
@@ -174,6 +170,12 @@ export default function About() {
             />
           </div>
         </div>
+        </section>
+      )}
+
+      {/* Portrait Images Section */}
+      <section className="py-16 px-6 max-w-7xl mx-auto">
+        
       </section>
 
       {/* Interactive Timeline Section */}

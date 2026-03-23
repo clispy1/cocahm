@@ -16,6 +16,7 @@ export default defineType({
     defineField({ name: 'email', title: 'Email Address', type: 'string', readOnly: true }),
     defineField({ name: 'address', title: 'Residential Address', type: 'string', readOnly: true }),
     defineField({ name: 'emergencyContact', title: 'Emergency Contact', type: 'string', readOnly: true }),
+    defineField({ name: 'passportPicture', title: 'Passport Picture', type: 'image', readOnly: true }),
     
     defineField({ name: 'guardianName', title: 'Guardian Name', type: 'string', readOnly: true }),
     defineField({ name: 'guardianPhone', title: 'Guardian Phone', type: 'string', readOnly: true }),

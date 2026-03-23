@@ -22,16 +22,21 @@ export async function POST(request: Request) {
       phone, email, address, emergencyContact, guardianName, guardianPhone, 
       guardianResidence, lastSchool, educationLevel, programCategory, program, 
       accommodation, experience, experienceDetails, disability, disabilityDetails, 
-      allergies, allergyDetails 
+      allergies, allergyDetails, passportPicture 
     } = body;
 
     // Basic validation
-    if (!firstName || !surname || !email || !phone || !program) {
+    if (!firstName || !surname || !email || !phone || !program || !passportPicture) {
       return NextResponse.json(
         { message: 'Missing required fields' },
         { status: 400 }
       );
     }
+
+    // Upload passport picture to Sanity
+    const imageAsset = await client.assets.upload('image', Buffer.from(passportPicture.split(',')[1], 'base64'), {
+      filename: `passport-${firstName}-${surname}.jpg`,
+    });
 
     // Create the document in Sanity
     const newEnrollment = {
@@ -47,6 +52,13 @@ export async function POST(request: Request) {
       email,
       address,
       emergencyContact,
+      passportPicture: {
+        _type: 'image',
+        asset: {
+          _type: 'reference',
+          _ref: imageAsset._id,
+        },
+      },
       guardianName,
       guardianPhone,
       guardianResidence,

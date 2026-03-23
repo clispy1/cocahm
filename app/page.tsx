@@ -128,7 +128,7 @@ const About = ({ data }: { data: any }) => {
             />
           </div>
           <div
-            className="absolute -bottom-8 -right-8 bg-white p-8 rounded-2xl shadow-xl hidden lg:block max-w-xs z-10"
+            className="absolute -bottom-8 -right-8 bg-white p-8 rounded-2xl shadow-xl max-w-xs z-10 mx-6 lg:mx-0"
           >
             <p className="text-brand-primary font-serif italic text-xl mb-2">"{data?.welcomeMessage || 'We are not just churning out cooks, we are churning out individuals with transferable skills'}"</p>
             <p className="text-gray-500 text-sm">— CoCAHM</p>

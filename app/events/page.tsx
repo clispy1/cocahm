@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Calendar as CalendarIcon, MapPin, Clock, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 import { EVENTS } from '@/constants';
 import { client } from '@/sanity/lib/client';
 import { allEventsQuery } from '@/sanity/lib/queries';
@@ -43,6 +44,7 @@ export default function Events() {
     return {
       id: event._id,
       title: event.title,
+      slug: event.slug?.current,
       date: eventDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
       time: event.time,
       location: event.location,
@@ -173,7 +175,9 @@ export default function Events() {
                             </div>
                           </div>
                           <p className="text-sm text-gray-600 mb-4">{event.description}</p>
-                          <button className="text-sm font-bold text-brand-primary hover:underline">Register Now &rarr;</button>
+                          <button className="text-sm font-bold text-brand-primary hover:underline">
+                            <Link href={`/events/${event.slug}`}>Register Now &rarr;</Link>
+                          </button>
                         </div>
                       ))}
                     </div>
@@ -247,10 +251,10 @@ export default function Events() {
                   {event.description}
                 </p>
                 
-                <button className="flex items-center gap-2 text-brand-primary font-medium group/btn mt-auto">
+                <Link href={`/events/${event.slug}`} className="flex items-center gap-2 text-brand-primary font-medium group/btn mt-auto">
                   Register Now
                   <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
-                </button>
+                </Link>
               </div>
             </div>
           ))}

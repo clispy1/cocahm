@@ -26,6 +26,7 @@ function EnrollmentForm() {
     email: '',
     address: '',
     emergencyContact: '',
+    passportPicture: null as string | null,
     guardianName: '',
     guardianPhone: '',
     guardianResidence: '',
@@ -88,8 +89,19 @@ function EnrollmentForm() {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    if (type === 'file') {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setFormData(prev => ({ ...prev, passportPicture: reader.result as string }));
+        };
+        reader.readAsDataURL(file);
+      }
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

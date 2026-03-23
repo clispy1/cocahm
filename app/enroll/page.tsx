@@ -13,6 +13,7 @@ import { allCategoriesQuery, allFaqsQuery } from '@/sanity/lib/queries';
 function EnrollmentForm() {
   const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState(1);
+  const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [paymentReference, setPaymentReference] = useState('');
@@ -152,28 +153,60 @@ function EnrollmentForm() {
           </p>
         </div>
 
-        {/* Progress Bar */}
-        <div className="mb-12">
-          <div className="flex items-center justify-between relative">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-gray-200 rounded-full z-0"></div>
-            <div 
-              className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-brand-primary rounded-full z-0 transition-all duration-500"
-              style={{ width: `${((currentStep - 1) / 2) * 100}%` }}
-            ></div>
-            
-            {[1, 2, 3].map(step => (
-              <div key={step} className={`relative z-10 flex flex-col items-center justify-center w-10 h-10 rounded-full font-bold transition-colors duration-300 ${currentStep >= step ? 'bg-brand-primary text-white' : 'bg-gray-200 text-gray-500'}`}>
-                {currentStep > step ? <CheckCircle2 className="w-5 h-5" /> : step}
-                <span className={`absolute -bottom-8 text-xs font-medium whitespace-nowrap ${currentStep >= step ? 'text-brand-primary' : 'text-gray-500'}`}>
-                  {step === 1 ? 'Personal' : step === 2 ? 'Program' : 'Background'}
-                </span>
-              </div>
-            ))}
+        {hasAcceptedTerms && !isSubmitted && (
+          /* Progress Bar */
+          <div className="mb-12">
+            <div className="flex items-center justify-between relative">
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-gray-200 rounded-full z-0"></div>
+              <div 
+                className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-brand-primary rounded-full z-0 transition-all duration-500"
+                style={{ width: `${((currentStep - 1) / 2) * 100}%` }}
+              ></div>
+              
+              {[1, 2, 3].map(step => (
+                <div key={step} className={`relative z-10 flex flex-col items-center justify-center w-10 h-10 rounded-full font-bold transition-colors duration-300 ${currentStep >= step ? 'bg-brand-primary text-white' : 'bg-gray-200 text-gray-500'}`}>
+                  {currentStep > step ? <CheckCircle2 className="w-5 h-5" /> : step}
+                  <span className={`absolute -bottom-8 text-xs font-medium whitespace-nowrap ${currentStep >= step ? 'text-brand-primary' : 'text-gray-500'}`}>
+                    {step === 1 ? 'Personal' : step === 2 ? 'Program' : 'Background'}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 mb-24">
-          {isSubmitted ? (
+          {!hasAcceptedTerms ? (
+            <div className="space-y-8">
+              <h2 className="text-3xl font-serif font-bold text-gray-900">Enrollment Information</h2>
+              <div className="space-y-6 text-gray-700 leading-relaxed">
+                <section>
+                  <h3 className="text-xl font-bold text-gray-950 mb-2">Requirements</h3>
+                  <ul className="list-disc pl-5 space-y-2">
+                    <li>Completed application form.</li>
+                    <li>Valid identification (e.g., Passport, National ID).</li>
+                    <li>Academic transcripts from the last institution attended.</li>
+                    <li>Two passport-sized photographs.</li>
+                  </ul>
+                </section>
+                <section>
+                  <h3 className="text-xl font-bold text-gray-950 mb-2">Terms and Conditions</h3>
+                  <p>By proceeding, you agree to abide by the policies and regulations of the College of Culinary Arts and Hospitality Management. All information provided must be accurate and truthful.</p>
+                </section>
+                <section>
+                  <h3 className="text-xl font-bold text-gray-950 mb-2">Payment</h3>
+                  <p>A non-refundable application fee is required to process your enrollment. Payment is handled securely through Paystack.</p>
+                </section>
+              </div>
+              <button 
+                onClick={() => setHasAcceptedTerms(true)}
+                className="w-full bg-brand-primary text-white px-8 py-4 rounded-xl font-bold hover:bg-opacity-90 transition-all shadow-lg shadow-brand-primary/30 flex items-center justify-center gap-2"
+              >
+                Proceed to Application
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          ) : isSubmitted ? (
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}

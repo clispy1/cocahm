@@ -86,6 +86,37 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </div>
           </div>
         </div>
+
+        {/* Related Posts Section (Placeholder for when Sanity is connected) */}
+        <div className="mt-24 border-t border-gray-200 pt-16">
+          <h2 className="font-serif text-3xl font-bold text-gray-900 mb-10 text-center">More from the Blog</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {BLOG_POSTS.filter(p => p.slug !== post.slug).slice(0, 2).map((relatedPost) => (
+              <Link href={`/blog/${relatedPost.slug}`} key={relatedPost.slug} className="group flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all">
+                <div className="w-full h-48 relative overflow-hidden">
+                  <Image 
+                    src={relatedPost.image} 
+                    alt={relatedPost.title} 
+                    fill
+                    referrerPolicy="no-referrer"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <div className="p-6">
+                  <div className="text-xs font-bold uppercase tracking-wider text-brand-primary mb-3">
+                    {relatedPost.category}
+                  </div>
+                  <h3 className="font-serif text-xl font-bold text-gray-900 mb-3 group-hover:text-brand-primary transition-colors line-clamp-2">
+                    {relatedPost.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm line-clamp-2">
+                    {relatedPost.excerpt}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
       </article>
     </main>
   );

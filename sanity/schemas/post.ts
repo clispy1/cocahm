@@ -22,6 +22,40 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'author',
+      title: 'Author',
+      type: 'reference',
+      to: [{ type: 'faculty' }],
+      description: 'Select the faculty member who wrote this post.',
+    }),
+    defineField({
+      name: 'category',
+      title: 'Category',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Techniques', value: 'Techniques' },
+          { title: 'Presentation', value: 'Presentation' },
+          { title: 'Theory', value: 'Theory' },
+          { title: 'Student Life', value: 'Student Life' },
+          { title: 'Industry News', value: 'Industry News' },
+        ],
+      },
+    }),
+    defineField({
+      name: 'readTime',
+      title: 'Estimated Read Time (minutes)',
+      type: 'number',
+      description: 'e.g., 5',
+    }),
+    defineField({
+      name: 'featured',
+      title: 'Featured Post',
+      type: 'boolean',
+      description: 'Toggle this to highlight this post on the blog index page.',
+      initialValue: false,
+    }),
+    defineField({
       name: 'mainImage',
       title: 'Main image',
       type: 'image',
@@ -48,6 +82,14 @@ export default defineType({
         { type: 'block' },
         { type: 'image' }
       ],
+    }),
+    defineField({
+      name: 'relatedPosts',
+      title: 'Related Posts',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'post' }] }],
+      description: 'Select up to 3 related posts to show at the bottom of the article.',
+      validation: (Rule) => Rule.max(3),
     }),
   ],
 })

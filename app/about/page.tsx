@@ -126,57 +126,54 @@ export default function About() {
 
       {/* Our Story / Mission / Vision */}
       {(aboutData?.story || aboutData?.missionStatement || aboutData?.visionStatement) && (
-        <section className="bg-white py-20 md:py-32 flex flex-column gap-6 md:flex-row ">
-          <div className="max-w-4xl mx-auto px-6">
-            {aboutData.missionStatement && (
-              <div className="mb-12">
-                <h2 className="text-2xl font-serif font-bold text-brand-primary mb-4">Our Mission</h2>
-                <p className="text-lg text-gray-800 leading-relaxed">{aboutData.missionStatement}</p>
-              </div>
-            )}
-            {aboutData.visionStatement && (
-              <div className="mb-12">
-                <h2 className="text-2xl font-serif font-bold text-brand-primary mb-4">Our Vision</h2>
-                <p className="text-lg text-gray-800 leading-relaxed">{aboutData.visionStatement}</p>
-              </div>
-            )}
-            {aboutData.story && (
-              <div>
-                <h2 className="text-2xl font-serif font-bold text-brand-primary mb-4">Our Story</h2>
-                <div className="prose prose-lg text-gray-800 leading-relaxed">
-                  <PortableText value={aboutData.story} />
+        <section className="bg-white py-20 md:py-32">
+          <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-start">
+            <div className="space-y-12">
+              {aboutData.missionStatement && (
+                <div>
+                  <h2 className="text-2xl font-serif font-bold text-brand-primary mb-4">Our Mission</h2>
+                  <p className="text-lg text-gray-800 leading-relaxed">{aboutData.missionStatement}</p>
                 </div>
+              )}
+              {aboutData.visionStatement && (
+                <div>
+                  <h2 className="text-2xl font-serif font-bold text-brand-primary mb-4">Our Vision</h2>
+                  <p className="text-lg text-gray-800 leading-relaxed">{aboutData.visionStatement}</p>
+                </div>
+              )}
+              {aboutData.story && (
+                <div>
+                  <h2 className="text-2xl font-serif font-bold text-brand-primary mb-4">Our Story</h2>
+                  <div className="prose prose-lg text-gray-800 leading-relaxed">
+                    <PortableText value={aboutData.story} />
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-2 gap-6 sticky top-24">
+              <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-xl relative">
+                <Image 
+                  src="https://picsum.photos/seed/portrait1/600/800" 
+                  alt="Portrait 1" 
+                  fill
+                  className="object-cover"
+                  referrerPolicy="no-referrer"
+                />
               </div>
-            )}
+              <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-xl relative">
+                <Image 
+                  src="https://picsum.photos/seed/portrait2/600/800" 
+                  alt="Portrait 2" 
+                  fill
+                  className="object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+            </div>
           </div>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-          <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-xl relative">
-            <Image 
-              src="https://picsum.photos/seed/portrait1/600/800" 
-              alt="Portrait 1" 
-              fill
-              className="object-cover"
-              referrerPolicy="no-referrer"
-            />
-          </div>
-          <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-xl relative">
-            <Image 
-              src="https://picsum.photos/seed/portrait2/600/800" 
-              alt="Portrait 2" 
-              fill
-              className="object-cover"
-              referrerPolicy="no-referrer"
-            />
-          </div>
-        </div>
         </section>
       )}
-
-      {/* Portrait Images Section */}
-      <section className="py-16 px-6 max-w-7xl mx-auto">
-        
-      </section>
 
       {/* Interactive Timeline Section */}
       <section className="max-w-5xl mx-auto px-6 py-16 md:py-24">

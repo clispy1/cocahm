@@ -1,14 +1,47 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { GALLERY_IMAGES } from '@/constants';
 import { motion } from 'motion/react';
 import { Trophy, Clock, Coffee, BookOpen, ChefHat, Utensils } from 'lucide-react';
+import { client } from '@/sanity/lib/client';
+import { studentLifePageQuery, allGalleryImagesQuery } from '@/sanity/lib/queries';
+import imageUrlBuilder from '@sanity/image-url';
+import { PortableText } from '@portabletext/react';
+
+const builder = imageUrlBuilder(client);
+function urlFor(source: any) {
+  if (typeof source === 'string') {
+    return { url: () => source };
+  }
+  return builder.image(source);
+}
 
 export default function StudentLife() {
+  const [pageData, setPageData] = useState<any>(null);
+  const [galleryImages, setGalleryImages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    async function fetchData() {
+      try {
+        const [page, gallery] = await Promise.all([
+          client.fetch(studentLifePageQuery),
+          client.fetch(allGalleryImagesQuery)
+        ]);
+        setPageData(page);
+        setGalleryImages(gallery);
+      } catch (error) {
+        console.error("Error fetching student life data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchData();
   }, []);
 
   const dailySchedule = [
@@ -24,15 +57,32 @@ export default function StudentLife() {
     { year: "2021", title: "Young Chef Olympiad", award: "Top 10 Finalist", desc: "Represented Ghana on the global stage, competing against culinary students from over 50 countries." }
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary"></div>
+      </div>
+    );
+  }
+
+  const headline = pageData?.headline || "Student Life at CoCAHM";
+  const heroImage = pageData?.heroImage ? urlFor(pageData.heroImage).url() : null;
+
   return (
     <div className="pt-32 pb-24 px-6 min-h-screen bg-white text-gray-900">
       <div className="max-w-7xl mx-auto">
         <div className="mb-16 text-center">
           <span className="text-brand-primary font-medium tracking-widest text-xs uppercase mb-4 block">Campus Experience</span>
-          <h1 className="text-4xl md:text-5xl font-serif mb-6 text-gray-950">Student Life at CoCAHM</h1>
-          <p className="text-gray-800 max-w-2xl mx-auto text-lg leading-relaxed">
-            Life at CoCAHM is vibrant, challenging, and deeply rewarding. Beyond the kitchens and classrooms, our students build lifelong friendships, network with industry leaders, and immerse themselves in the rich culinary culture of Ghana.
-          </p>
+          <h1 className="text-4xl md:text-5xl font-serif mb-6 text-gray-950">{headline}</h1>
+          {pageData?.content ? (
+            <div className="text-gray-800 max-w-2xl mx-auto text-lg leading-relaxed prose prose-lg">
+              <PortableText value={pageData.content} />
+            </div>
+          ) : (
+            <p className="text-gray-800 max-w-2xl mx-auto text-lg leading-relaxed">
+              Life at CoCAHM is vibrant, challenging, and deeply rewarding. Beyond the kitchens and classrooms, our students build lifelong friendships, network with industry leaders, and immerse themselves in the rich culinary culture of Ghana.
+            </p>
+          )}
         </div>
 
         {/* Highlight Section */}
@@ -55,10 +105,16 @@ export default function StudentLife() {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="grid grid-cols-2 gap-4"
+            className="grid grid-cols-2 gap-4 h-full"
           >
-            <img src="https://picsum.photos/seed/student1/400/500" alt="Students cooking" className="rounded-2xl w-full h-full object-cover" referrerPolicy="no-referrer" />
-            <img src="https://picsum.photos/seed/student2/400/500" alt="Students plating" className="rounded-2xl w-full h-full object-cover mt-8" referrerPolicy="no-referrer" />
+            {heroImage ? (
+              <img src={heroImage} alt="Campus Experience" className="rounded-2xl w-full h-full object-cover col-span-2" referrerPolicy="no-referrer" />
+            ) : (
+              <>
+                <img src="https://picsum.photos/seed/student1/400/500" alt="Students cooking" className="rounded-2xl w-full h-full object-cover" referrerPolicy="no-referrer" />
+                <img src="https://picsum.photos/seed/student2/400/500" alt="Students plating" className="rounded-2xl w-full h-full object-cover mt-8" referrerPolicy="no-referrer" />
+              </>
+            )}
           </motion.div>
         </div>
 
@@ -140,39 +196,64 @@ export default function StudentLife() {
         <div className="mb-16">
           <h2 className="text-3xl font-serif font-bold text-center mb-12 text-gray-950">Campus Gallery</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="md:col-span-2 md:row-span-2 relative overflow-hidden rounded-2xl group bg-gray-100"
-            >
-              <Image 
-                src="/6_556a25cfb5d4c1a0c5fa5912deb0c5f70f622d3b-3975x5963.jpg" 
-                alt="Student Life Featured" 
-                fill
-                className="object-cover group-hover:scale-110 transition-transform duration-700"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </motion.div>
-            {GALLERY_IMAGES.map((img, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className={`relative overflow-hidden rounded-2xl group bg-gray-100 ${index === 0 || index === 3 ? 'md:col-span-2 md:row-span-2' : ''}`}
-              >
-                <img 
-                  src={img} 
-                  alt={`Student Life ${index}`} 
-                  className="w-full h-full object-cover aspect-square group-hover:scale-110 transition-transform duration-700"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </motion.div>
-            ))}
+            {galleryImages && galleryImages.length > 0 ? (
+              galleryImages.map((img, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
+                  className={`relative overflow-hidden rounded-2xl group bg-gray-100 ${index === 0 || index === 3 ? 'md:col-span-2 md:row-span-2' : ''}`}
+                >
+                  <img 
+                    src={urlFor(img.image).url()} 
+                    alt={img.caption || `Gallery Image ${index}`} 
+                    className="w-full h-full object-cover aspect-square group-hover:scale-110 transition-transform duration-700"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                    {img.caption && <p className="text-white font-medium text-sm">{img.caption}</p>}
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              <>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  className="md:col-span-2 md:row-span-2 relative overflow-hidden rounded-2xl group bg-gray-100"
+                >
+                  <Image 
+                    src="/6_556a25cfb5d4c1a0c5fa5912deb0c5f70f622d3b-3975x5963.jpg" 
+                    alt="Student Life Featured" 
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </motion.div>
+                {GALLERY_IMAGES.map((img, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.05 }}
+                    className={`relative overflow-hidden rounded-2xl group bg-gray-100 ${index === 0 || index === 3 ? 'md:col-span-2 md:row-span-2' : ''}`}
+                  >
+                    <img 
+                      src={img} 
+                      alt={`Student Life ${index}`} 
+                      className="w-full h-full object-cover aspect-square group-hover:scale-110 transition-transform duration-700"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </motion.div>
+                ))}
+              </>
+            )}
           </div>
         </div>
       </div>

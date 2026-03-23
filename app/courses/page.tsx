@@ -5,27 +5,75 @@ import Link from 'next/link';
 import { ArrowRight, Clock, Award, CheckCircle2, ChevronDown, Download, Briefcase, BookOpen } from 'lucide-react';
 import { COURSE_CATEGORIES } from '@/constants';
 import { motion, AnimatePresence } from 'motion/react';
+import { client } from '@/sanity/lib/client';
+import { allCategoriesQuery } from '@/sanity/lib/queries';
+import imageUrlBuilder from '@sanity/image-url';
+
+const builder = imageUrlBuilder(client);
+function urlFor(source: any) {
+  if (typeof source === 'string') {
+    return { url: () => source };
+  }
+  return builder.image(source);
+}
 
 export default function Courses() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    async function fetchCategories() {
+      try {
+        const data = await client.fetch(allCategoriesQuery);
+        setCategories(data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchCategories();
   }, []);
+
+  const displayCategories = categories.length > 0 ? categories.map(c => ({
+    id: c.slug?.current || c._id,
+    title: c.title,
+    description: c.description,
+    image: c.image ? urlFor(c.image).url() : 'https://picsum.photos/seed/course/800/600',
+    curriculum: c.curriculum || [],
+    careerOutcomes: c.careerOutcomes || [],
+    courses: c.courses?.map((course: any) => ({
+      id: course._id,
+      name: course.name,
+      duration: course.duration
+    })) || []
+  })) : COURSE_CATEGORIES;
 
   const filters = [
     { id: 'all', label: 'All Programs' },
-    ...COURSE_CATEGORIES.map(c => ({ id: c.id, label: c.title.split(' (')[0] }))
+    ...displayCategories.map(c => ({ id: c.id, label: c.title.split(' (')[0] }))
   ];
 
   const filteredCategories = activeFilter === 'all' 
-    ? COURSE_CATEGORIES 
-    : COURSE_CATEGORIES.filter(c => c.id === activeFilter);
+    ? displayCategories 
+    : displayCategories.filter(c => c.id === activeFilter);
 
   const toggleAccordion = (id: string) => {
     setExpandedCategory(expandedCategory === id ? null : id);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-brand-bg">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-32 pb-24 px-6 min-h-screen bg-brand-bg">
@@ -125,7 +173,7 @@ export default function Courses() {
                                 What You'll Learn
                               </h4>
                               <ul className="space-y-3">
-                                {category.curriculum?.map((item, i) => (
+                                {category.curriculum?.map((item: string, i: number) => (
                                   <li key={i} className="text-gray-600 text-sm flex items-start gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-brand-primary/50 mt-1.5 shrink-0" />
                                     {item}
@@ -139,7 +187,7 @@ export default function Courses() {
                                 Career Paths
                               </h4>
                               <ul className="space-y-3">
-                                {category.careerOutcomes?.map((item, i) => (
+                                {category.careerOutcomes?.map((item: string, i: number) => (
                                   <li key={i} className="text-gray-600 text-sm flex items-start gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-brand-primary/50 mt-1.5 shrink-0" />
                                     {item}
@@ -159,7 +207,7 @@ export default function Courses() {
                       Available Courses
                     </h3>
                     <div className="space-y-4">
-                      {category.courses.map(course => (
+                      {category.courses.map((course: any) => (
                         <div key={course.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-xl hover:bg-brand-primary/5 transition-colors">
                           <div className="flex items-center gap-3">
                             <CheckCircle2 className="w-4 h-4 text-brand-primary shrink-0" />

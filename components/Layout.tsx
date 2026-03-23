@@ -7,12 +7,21 @@ import {
   Menu, X, MapPin, Phone, Mail, Instagram, Facebook, Twitter, ChevronDown
 } from 'lucide-react';
 import { SCHOOL_NAME } from '@/constants';
+import { client } from '@/sanity/lib/client';
+import { siteSettingsQuery } from '@/sanity/lib/queries';
 
 export const Navbar = () => {
   const pathname = usePathname();
   const isHome = pathname === '/';
   const [isScrolled, setIsScrolled] = useState(!isHome);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [settings, setSettings] = useState<any>(null);
+
+  useEffect(() => {
+    client.fetch(siteSettingsQuery).then((data) => {
+      setSettings(data);
+    }).catch(console.error);
+  }, []);
 
   useEffect(() => {
     if (!isHome) {
@@ -28,7 +37,7 @@ export const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isHome]);
 
-  if (pathname.startsWith('/studio')) return null;
+  if (pathname?.startsWith('/studio')) return null;
 
   const navLinks = [
     { name: 'Home', href: '/' },
@@ -54,7 +63,7 @@ export const Navbar = () => {
         <Link href="/" className="flex items-center gap-2">
           <img 
             src="/logo-w.svg" 
-            alt={SCHOOL_NAME} 
+            alt={settings?.title || SCHOOL_NAME} 
             className={`h-10 w-auto ${isScrolled ? 'brightness-0' : 'brightness-100'}`}
           />
         </Link>
@@ -149,7 +158,15 @@ export const Navbar = () => {
 
 export const Footer = () => {
   const pathname = usePathname();
-  if (pathname.startsWith('/studio')) return null;
+  const [settings, setSettings] = useState<any>(null);
+
+  useEffect(() => {
+    client.fetch(siteSettingsQuery).then((data) => {
+      setSettings(data);
+    }).catch(console.error);
+  }, []);
+
+  if (pathname?.startsWith('/studio')) return null;
 
   return (
     <footer className="bg-gray-950 text-white pt-24 pb-12 px-6">
@@ -159,23 +176,35 @@ export const Footer = () => {
             <div className="flex items-center gap-2 mb-8">
               <img 
                 src="/logo-w.svg" 
-                alt={SCHOOL_NAME} 
+                alt={settings?.title || SCHOOL_NAME} 
                 className="h-12 w-auto brightness-100"
               />
             </div>
             <p className="text-gray-400 text-sm leading-relaxed mb-8">
-              Empowering the next generation of culinary leaders through professional training, industry expertise, and a passion for excellence.
+              {settings?.description || "Empowering the next generation of culinary leaders through professional training, industry expertise, and a passion for excellence."}
             </p>
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-brand-primary transition-colors">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-brand-primary transition-colors">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-brand-primary transition-colors">
-                <Twitter className="w-5 h-5" />
-              </a>
+              {settings?.socials?.map((social: any, i: number) => (
+                <a key={i} href={social.url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-brand-primary transition-colors">
+                  {social.platform.toLowerCase() === 'instagram' && <Instagram className="w-5 h-5" />}
+                  {social.platform.toLowerCase() === 'facebook' && <Facebook className="w-5 h-5" />}
+                  {social.platform.toLowerCase() === 'twitter' && <Twitter className="w-5 h-5" />}
+                  {!['instagram', 'facebook', 'twitter'].includes(social.platform.toLowerCase()) && <span className="text-xs">{social.platform.substring(0,2)}</span>}
+                </a>
+              ))}
+              {(!settings?.socials || settings.socials.length === 0) && (
+                <>
+                  <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-brand-primary transition-colors">
+                    <Instagram className="w-5 h-5" />
+                  </a>
+                  <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-brand-primary transition-colors">
+                    <Facebook className="w-5 h-5" />
+                  </a>
+                  <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-brand-primary transition-colors">
+                    <Twitter className="w-5 h-5" />
+                  </a>
+                </>
+              )}
             </div>
           </div>
 
@@ -198,15 +227,15 @@ export const Footer = () => {
             <ul className="space-y-6 text-gray-400 text-sm">
               <li className="flex gap-4">
                 <MapPin className="w-5 h-5 text-brand-primary shrink-0" />
-                <span>Abavana Junction, Towards Maamobi Hospital</span>
+                <span>{settings?.address || "Abavana Junction, Towards Maamobi Hospital"}</span>
               </li>
               <li className="flex gap-4">
                 <Phone className="w-5 h-5 text-brand-primary shrink-0" />
-                <span>+233 (0)24 286 9439<br/>024 370 8575<br/>050 230 0165</span>
+                <span className="whitespace-pre-line">{settings?.phone || "+233 (0)24 286 9439\n024 370 8575\n050 230 0165"}</span>
               </li>
               <li className="flex gap-4">
                 <Mail className="w-5 h-5 text-brand-primary shrink-0" />
-                <span>info@cocahm.com</span>
+                <span>{settings?.email || "info@cocahm.com"}</span>
               </li>
             </ul>
           </div>
@@ -228,7 +257,7 @@ export const Footer = () => {
         </div>
 
         <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-gray-500 uppercase tracking-widest">
-          <p>© 2026 {SCHOOL_NAME}. All Rights Reserved.</p>
+          <p>© 2026 {settings?.title || SCHOOL_NAME}. All Rights Reserved.</p>
           <div className="flex gap-8">
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-white transition-colors">Terms of Service</a>

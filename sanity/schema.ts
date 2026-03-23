@@ -13,6 +13,7 @@ import studentLifePage from './schemas/studentLifePage'
 import faq from './schemas/faq'
 import gallery from './schemas/gallery'
 import enrollment from './schemas/enrollment'
+import contactMessage from './schemas/contactMessage'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -29,5 +30,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     faq,
     gallery,
     enrollment,
+    contactMessage,
   ],
 }

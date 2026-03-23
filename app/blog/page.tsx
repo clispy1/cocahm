@@ -1,10 +1,54 @@
-import React from 'react';
+"use client";
+
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, User, ArrowRight } from 'lucide-react';
 import { BLOG_POSTS } from './data';
+import { client } from '@/sanity/lib/client';
+import { allPostsQuery } from '@/sanity/lib/queries';
 
 export default function BlogPage() {
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const data = await client.fetch(allPostsQuery);
+        setPosts(data);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchPosts();
+  }, []);
+
+  const displayPosts = posts.length > 0 ? posts.map(post => ({
+    slug: post.slug?.current || post._id,
+    title: post.title,
+    excerpt: post.excerpt || post.body?.[0]?.children?.[0]?.text?.substring(0, 150) + '...' || '',
+    image: post.imageUrl || 'https://picsum.photos/seed/blog/800/600',
+    category: post.categories?.[0]?.title || 'General',
+    date: new Date(post.publishedAt).toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    }),
+    author: post.author?.name || 'CoCAHM Team'
+  })) : BLOG_POSTS;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-brand-bg">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <main className="pt-32 pb-24">
       <div className="max-w-7xl mx-auto px-6">
@@ -18,7 +62,7 @@ export default function BlogPage() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {BLOG_POSTS.map((post) => (
+          {displayPosts.map((post) => (
             <article key={post.slug} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow flex flex-col">
               <div className="relative h-48 sm:h-64 overflow-hidden">
                 <Image 

@@ -6,6 +6,16 @@ export default defineType({
   type: 'document',
   fields: [
     defineField({
+      name: 'heroHeadline',
+      title: 'Hero Headline',
+      type: 'string',
+    }),
+    defineField({
+      name: 'heroText',
+      title: 'Hero Text',
+      type: 'text',
+    }),
+    defineField({
       name: 'heroImage',
       title: 'Hero Image',
       type: 'image',
@@ -26,6 +36,11 @@ export default defineType({
       title: 'Our Story',
       type: 'array',
       of: [{ type: 'block' }],
+    }),
+    defineField({
+      name: 'quote',
+      title: 'Quote',
+      type: 'text',
     }),
   ],
 })

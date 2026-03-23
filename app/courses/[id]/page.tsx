@@ -1,25 +1,91 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { COURSE_CATEGORIES } from '@/constants';
 import { Clock, BookOpen, Briefcase, CheckCircle2, ArrowLeft, ArrowRight } from 'lucide-react';
+import { client } from '@/sanity/lib/client';
+import { groq } from 'next-sanity';
+import imageUrlBuilder from '@sanity/image-url';
+
+const builder = imageUrlBuilder(client);
+function urlFor(source: any) {
+  if (typeof source === 'string') {
+    return { url: () => source };
+  }
+  return builder.image(source);
+}
+
+const categoryQuery = groq`*[_type == "category" && (slug.current == $id || _id == $id)][0] {
+  ...,
+  "courses": *[_type == "course" && references(^._id)]
+}`;
 
 export default function CourseDetail() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
 
-  const category = COURSE_CATEGORIES.find(c => c.id === id);
+  const [category, setCategory] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    if (!category) {
-      router.push('/courses');
+    
+    async function fetchCategory() {
+      try {
+        const data = await client.fetch(categoryQuery, { id });
+        
+        if (data) {
+          setCategory({
+            id: data.slug?.current || data._id,
+            title: data.title,
+            description: data.description,
+            image: data.image ? urlFor(data.image).url() : 'https://picsum.photos/seed/course/800/600',
+            curriculum: data.curriculum || [],
+            careerOutcomes: data.careerOutcomes || [],
+            courses: data.courses?.map((course: any) => ({
+              id: course._id,
+              name: course.name,
+              duration: course.duration
+            })) || []
+          });
+        } else {
+          // Fallback to constants
+          const fallbackCategory = COURSE_CATEGORIES.find(c => c.id === id);
+          if (fallbackCategory) {
+             setCategory(fallbackCategory);
+          } else {
+             router.push('/courses');
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching category:", error);
+        const fallbackCategory = COURSE_CATEGORIES.find(c => c.id === id);
+        if (fallbackCategory) {
+           setCategory(fallbackCategory);
+        } else {
+           router.push('/courses');
+        }
+      } finally {
+        setLoading(false);
+      }
     }
-  }, [category, router]);
+
+    if (id) {
+      fetchCategory();
+    }
+  }, [id, router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-brand-bg">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary"></div>
+      </div>
+    );
+  }
 
   if (!category) return null;
 
@@ -68,7 +134,7 @@ export default function CourseDetail() {
                   <h3 className="text-xl font-bold text-gray-900">Core Curriculum</h3>
                 </div>
                 <ul className="grid sm:grid-cols-2 gap-3">
-                  {category.curriculum.map((item, idx) => (
+                  {category.curriculum?.map((item: string, idx: number) => (
                     <li key={idx} className="flex items-start gap-2 text-gray-600 text-sm">
                       <CheckCircle2 className="w-4 h-4 text-brand-primary shrink-0 mt-0.5" />
                       <span>{item}</span>
@@ -85,7 +151,7 @@ export default function CourseDetail() {
                   <h3 className="text-xl font-bold text-gray-900">Career Outcomes</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {category.careerOutcomes.map((outcome, idx) => (
+                  {category.careerOutcomes?.map((outcome: string, idx: number) => (
                     <span key={idx} className="bg-gray-50 text-gray-700 px-4 py-2 rounded-full text-sm font-medium border border-gray-200">
                       {outcome}
                     </span>
@@ -99,7 +165,7 @@ export default function CourseDetail() {
         <div className="mb-16">
           <h2 className="text-3xl font-serif font-bold text-gray-900 mb-8 text-center">Available Courses in this Program</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {category.courses.map((course) => (
+            {category.courses?.map((course: any) => (
               <div key={course.id} className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">{course.name}</h3>
                 <div className="flex items-center gap-2 text-gray-500 mb-8 font-medium">

@@ -3,8 +3,9 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ChevronRight, ChevronLeft, ChevronDown, CheckCircle2 } from 'lucide-react';
-import { COURSE_CATEGORIES } from '@/constants';
 import { motion, AnimatePresence } from 'motion/react';
+import { client } from '@/sanity/lib/client';
+import { allCategoriesQuery, allFaqsQuery } from '@/sanity/lib/queries';
 
 function EnrollmentForm() {
   const searchParams = useSearchParams();
@@ -45,6 +46,27 @@ function EnrollmentForm() {
 
   // FAQ State
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [faqs, setFaqs] = useState<any[]>([]);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [fetchedCategories, fetchedFaqs] = await Promise.all([
+          client.fetch(allCategoriesQuery),
+          client.fetch(allFaqsQuery)
+        ]);
+        setCategories(fetchedCategories || []);
+        setFaqs(fetchedFaqs || []);
+      } catch (error) {
+        console.error("Error fetching Sanity data:", error);
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -75,19 +97,28 @@ function EnrollmentForm() {
     if (currentStep !== 3) return;
     
     setIsSubmitting(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+    try {
+      const response = await fetch('/api/enroll', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-  const faqs = [
-    { q: "Do I need prior culinary experience to enroll?", a: "Not at all! Our programs cater to all levels, from absolute beginners to experienced cooks looking to refine their skills and gain certification." },
-    { q: "Are there payment plans available?", a: "Yes, we offer flexible installment plans for our diploma and long-term certificate courses. Please contact the admissions office for a customized payment schedule." },
-    { q: "What equipment do I need to buy?", a: "Students are required to purchase a CoCAHM uniform and a basic knife set. A detailed equipment list will be provided upon acceptance into the program." },
-    { q: "Is the City & Guilds certification recognized globally?", a: "Absolutely. City & Guilds is a globally recognized awarding body, and your certification will open doors in kitchens and hotels worldwide." }
-  ];
+      if (!response.ok) {
+        throw new Error('Failed to submit application');
+      }
+
+      setIsSubmitted(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('There was an error submitting your application. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="pt-32 pb-24 px-6 min-h-screen bg-brand-bg">
@@ -253,17 +284,23 @@ function EnrollmentForm() {
                 <div className="space-y-8">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-4">Select a Program Category</label>
+                    {isLoadingData ? (
+                      <div className="animate-pulse flex space-x-4">
+                        <div className="h-12 bg-gray-200 rounded-xl w-full"></div>
+                        <div className="h-12 bg-gray-200 rounded-xl w-full"></div>
+                      </div>
+                    ) : (
                     <div className="grid md:grid-cols-2 gap-3">
-                      {COURSE_CATEGORIES.map(category => (
+                      {categories.map(category => (
                         <label 
-                          key={category.id} 
-                          className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${formData.programCategory === category.id ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-brand-primary/50'}`}
+                          key={category._id || category.id} 
+                          className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${formData.programCategory === (category._id || category.id) ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-brand-primary/50'}`}
                         >
                           <input 
                             type="radio" 
                             name="programCategory" 
-                            value={category.id}
-                            checked={formData.programCategory === category.id}
+                            value={category._id || category.id}
+                            checked={formData.programCategory === (category._id || category.id)}
                             onChange={handleInputChange}
                             className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300"
                           />
@@ -271,23 +308,24 @@ function EnrollmentForm() {
                         </label>
                       ))}
                     </div>
+                    )}
                   </div>
 
                   {formData.programCategory && (
                     <div className="pt-4 border-t border-gray-100">
                       <label className="block text-sm font-medium text-gray-700 mb-4">Select Specific Course & Duration</label>
                       <div className="space-y-3">
-                        {COURSE_CATEGORIES.find(c => c.id === formData.programCategory)?.courses.map(course => (
+                        {categories.find(c => (c._id || c.id) === formData.programCategory)?.courses?.map((course: any) => (
                           <label 
-                            key={course.id} 
-                            className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${formData.program === course.id ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-brand-primary/50'}`}
+                            key={course._id || course.id} 
+                            className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${formData.program === (course._id || course.id) ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-brand-primary/50'}`}
                           >
                             <div className="flex items-center">
                               <input 
                                 type="radio" 
                                 name="program" 
-                                value={course.id}
-                                checked={formData.program === course.id}
+                                value={course._id || course.id}
+                                checked={formData.program === (course._id || course.id)}
                                 onChange={handleInputChange}
                                 className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300"
                               />
@@ -463,13 +501,13 @@ function EnrollmentForm() {
             <h2 className="text-3xl font-serif font-bold text-gray-900">Admissions FAQ</h2>
           </div>
           <div className="space-y-4">
-            {faqs.map((faq, index) => (
+            {faqs.length > 0 ? faqs.map((faq, index) => (
               <div key={index} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <button 
                   onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
                   className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
                 >
-                  <span className="font-bold text-gray-900 pr-4">{faq.q}</span>
+                  <span className="font-bold text-gray-900 pr-4">{faq.question || faq.q}</span>
                   <ChevronDown className={`w-5 h-5 text-gray-500 shrink-0 transition-transform duration-300 ${expandedFaq === index ? 'rotate-180' : ''}`} />
                 </button>
                 <AnimatePresence>
@@ -481,13 +519,15 @@ function EnrollmentForm() {
                       className="overflow-hidden"
                     >
                       <div className="px-6 pb-5 pt-2 text-gray-600 leading-relaxed border-t border-gray-50">
-                        {faq.a}
+                        {faq.answer || faq.a}
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
-            ))}
+            )) : (
+              <div className="text-center text-gray-500 py-8">No FAQs available at the moment.</div>
+            )}
           </div>
         </div>
 

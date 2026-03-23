@@ -31,8 +31,19 @@ export default defineType({
       type: 'string',
     }),
     defineField({
+      name: 'phoneNumbers',
+      title: 'Additional Phone Numbers',
+      type: 'array',
+      of: [{ type: 'string' }],
+    }),
+    defineField({
       name: 'address',
       title: 'Physical Address',
+      type: 'text',
+    }),
+    defineField({
+      name: 'officeHours',
+      title: 'Office Hours',
       type: 'text',
     }),
     defineField({

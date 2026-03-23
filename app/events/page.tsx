@@ -3,14 +3,54 @@
 import React, { useEffect, useState } from 'react';
 import { Calendar as CalendarIcon, MapPin, Clock, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { EVENTS } from '@/constants';
+import { client } from '@/sanity/lib/client';
+import { allEventsQuery } from '@/sanity/lib/queries';
+import imageUrlBuilder from '@sanity/image-url';
+
+const builder = imageUrlBuilder(client);
+function urlFor(source: any) {
+  if (typeof source === 'string') {
+    return { url: () => source };
+  }
+  return builder.image(source);
+}
 
 export default function Events() {
-  const [currentMonth, setCurrentMonth] = useState(new Date(2026, 9, 1)); // Oct 2026 as base
+  const [currentMonth, setCurrentMonth] = useState(new Date()); // Current month
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    async function fetchEvents() {
+      try {
+        const data = await client.fetch(allEventsQuery);
+        setEvents(data);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchEvents();
   }, []);
+
+  const displayEvents = events.length > 0 ? events.map(event => {
+    const eventDate = new Date(event.date);
+    return {
+      id: event._id,
+      title: event.title,
+      date: eventDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+      time: event.time,
+      location: event.location,
+      description: event.description,
+      image: event.image ? urlFor(event.image).url() : 'https://picsum.photos/seed/event/800/600',
+      rawDate: eventDate
+    };
+  }) : EVENTS.map(e => ({ ...e, rawDate: new Date(e.date) }));
 
   const nextMonth = () => {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
@@ -27,17 +67,21 @@ export default function Events() {
   
   // Parse event dates to match calendar
   const getEventsForDate = (day: number) => {
-    return EVENTS.filter(event => {
-      // Very basic parsing for demo purposes (e.g., "October 15, 2026")
-      const eventMonth = event.date.split(' ')[0];
-      const eventDay = parseInt(event.date.split(' ')[1].replace(',', ''));
-      const eventYear = parseInt(event.date.split(' ')[2]);
-      
-      return eventMonth === monthNames[currentMonth.getMonth()] && 
-             eventDay === day && 
-             eventYear === currentMonth.getFullYear();
+    return displayEvents.filter(event => {
+      const eventDate = event.rawDate;
+      return eventDate.getMonth() === currentMonth.getMonth() && 
+             eventDate.getDate() === day && 
+             eventDate.getFullYear() === currentMonth.getFullYear();
     });
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-brand-bg">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-32 pb-24 px-6 min-h-screen bg-brand-bg">
@@ -157,7 +201,7 @@ export default function Events() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {EVENTS.map((event, index) => (
+          {displayEvents.map((event, index) => (
             <div
               key={event.id}
               className="bg-white rounded-3xl overflow-hidden shadow-lg shadow-gray-200/50 group flex flex-col"

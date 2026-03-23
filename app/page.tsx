@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRef } from 'react';
@@ -12,23 +12,42 @@ import {
   SCHOOL_NAME, FULL_NAME, TAGLINE, SUB_TAGLINE, COURSE_CATEGORIES, FEATURES, TESTIMONIALS, GALLERY_IMAGES, EVENTS 
 } from '@/constants';
 import { BLOG_POSTS } from '@/app/blog/data';
+import { client } from '@/sanity/lib/client';
+import { homePageQuery, featuredEventsQuery, latestPostsQuery, allCategoriesQuery, allAlumniQuery, allGalleryImagesQuery } from '@/sanity/lib/queries';
+import imageUrlBuilder from '@sanity/image-url';
 
-const Hero = () => {
-    
-    
+const builder = imageUrlBuilder(client);
+function urlFor(source: any) {
+  if (typeof source === 'string') {
+    return { url: () => source };
+  }
+  return builder.image(source);
+}
+
+const Hero = ({ data }: { data: any }) => {
   return (
     <section className="relative h-screen h-[100dvh] min-h-[600px] flex items-center justify-center overflow-hidden bg-gray-950">
       <div className="absolute inset-0 z-0">
-        <video 
-          autoPlay 
-          loop 
-          muted 
-          playsInline 
-          className="w-full h-full object-cover"
-          poster="https://picsum.photos/seed/culinary-hero/1920/1080"
-        >
-          <source src="https://assets.mixkit.co/videos/preview/mixkit-chef-cooking-in-a-commercial-kitchen-43486-large.mp4" type="video/mp4" />
-        </video>
+        {data?.heroImage ? (
+          <Image 
+            src={urlFor(data.heroImage).url()} 
+            alt="Hero Background" 
+            fill 
+            className="object-cover"
+            priority
+          />
+        ) : (
+          <video 
+            autoPlay 
+            loop 
+            muted 
+            playsInline 
+            className="w-full h-full object-cover"
+            poster="https://picsum.photos/seed/culinary-hero/1920/1080"
+          >
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-chef-cooking-in-a-commercial-kitchen-43486-large.mp4" type="video/mp4" />
+          </video>
+        )}
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60 backdrop-blur-[1px]" />
       </div>
 
@@ -38,10 +57,10 @@ const Hero = () => {
             Est. 1971
           </span>
           <h1 className="text-5xl md:text-7xl lg:text-8xl text-white font-serif mb-6 leading-tight">
-            {TAGLINE}
+            {data?.heroHeadline || TAGLINE}
           </h1>
           <p className="text-lg md:text-xl text-white/90 font-light mb-10 max-w-2xl mx-auto leading-relaxed">
-            {SUB_TAGLINE} Join {SCHOOL_NAME}, the premier {FULL_NAME}.
+            {data?.heroSubheadline || `${SUB_TAGLINE} Join ${SCHOOL_NAME}, the premier ${FULL_NAME}.`}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="#courses" className="bg-white text-gray-900 px-10 py-4 rounded-full font-medium hover:bg-brand-bg transition-all flex items-center justify-center gap-2 group">
@@ -95,19 +114,11 @@ const FastFacts = () => {
   );
 };
 
-const About = () => {
-    
-  
+const About = ({ data }: { data: any }) => {
   return (
     <section id="about" className="py-24 px-6 bg-brand-bg">
       <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-        <div 
-          
-          
-          
-          
-          className="relative"
-        >
+        <div className="relative">
           <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl relative bg-gray-200">
             <img
               src="https://picsum.photos/seed/chef-about/800/1000" 
@@ -119,17 +130,12 @@ const About = () => {
           <div
             className="absolute -bottom-8 -right-8 bg-white p-8 rounded-2xl shadow-xl hidden lg:block max-w-xs z-10"
           >
-            <p className="text-brand-primary font-serif italic text-xl mb-2">"We are not just churning out cooks, we are churning out individuals with transferable skills"</p>
+            <p className="text-brand-primary font-serif italic text-xl mb-2">"{data?.welcomeMessage || 'We are not just churning out cooks, we are churning out individuals with transferable skills'}"</p>
             <p className="text-gray-500 text-sm">— CoCAHM</p>
           </div>
         </div>
 
-        <div
-          
-          
-          
-          
-        >
+        <div>
           <span className="text-brand-primary font-medium tracking-widest text-xs uppercase mb-4 block">Our Story</span>
           <h2 className="text-4xl md:text-5xl font-serif mb-8 leading-tight">Crafting the Future of Hospitality</h2>
           <div className="space-y-6 text-gray-600 leading-relaxed">
@@ -175,13 +181,7 @@ const About = () => {
 };
 
 interface CourseCategoryProps {
-  category: {
-    id: string;
-    title: string;
-    description: string;
-    image: string;
-    courses: { id: string; name: string; duration: string }[];
-  };
+  category: any;
   index: number;
 }
 
@@ -192,7 +192,7 @@ const CourseCategoryCard: React.FC<CourseCategoryProps> = ({ category, index }) 
     >
       <div className="aspect-video overflow-hidden relative">
         <img 
-          src={category.image} 
+          src={category.image ? urlFor(category.image).url() : "https://picsum.photos/seed/course/800/600"} 
           alt={category.title} 
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           referrerPolicy="no-referrer"
@@ -207,14 +207,14 @@ const CourseCategoryCard: React.FC<CourseCategoryProps> = ({ category, index }) 
           {category.description}
         </p>
         <div className="space-y-3 mb-8 flex-grow">
-          {category.courses.map(course => (
-            <div key={course.id} className="flex justify-between items-center text-sm border-b border-gray-100 pb-2">
+          {category.courses?.map((course: any) => (
+            <div key={course._id} className="flex justify-between items-center text-sm border-b border-gray-100 pb-2">
               <span className="font-medium text-gray-800">{course.name}</span>
               <span className="text-brand-primary bg-brand-primary/10 px-2 py-1 rounded-md text-xs whitespace-nowrap">{course.duration}</span>
             </div>
           ))}
         </div>
-        <Link href={`/courses/${category.id}`} className="flex items-center gap-2 text-brand-primary font-semibold group/btn mt-auto">
+        <Link href={`/courses`} className="flex items-center gap-2 text-brand-primary font-semibold group/btn mt-auto">
           View Program Details
           <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
         </Link>
@@ -223,7 +223,10 @@ const CourseCategoryCard: React.FC<CourseCategoryProps> = ({ category, index }) 
   );
 };
 
-const Courses = () => {
+const Courses = ({ categories }: { categories: any[] }) => {
+  // Fallback to constants if no data from Sanity
+  const displayCategories = categories && categories.length > 0 ? categories : COURSE_CATEGORIES;
+
   return (
     <section id="courses" className="py-24 px-6 bg-white">
       <div className="max-w-7xl mx-auto">
@@ -235,8 +238,8 @@ const Courses = () => {
           </p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {COURSE_CATEGORIES.map((category, index) => (
-            <CourseCategoryCard key={category.id} category={category} index={index} />
+          {displayCategories.map((category, index) => (
+            <CourseCategoryCard key={category.id || category._id} category={category} index={index} />
           ))}
         </div>
       </div>
@@ -245,8 +248,6 @@ const Courses = () => {
 };
 
 const Features = () => {
-    
-  
   return (
     <section id="features" className="py-24 px-6 bg-brand-primary text-white overflow-hidden relative">
       <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
@@ -254,8 +255,7 @@ const Features = () => {
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div
-          >
+          <div>
             <span className="text-white/60 font-medium tracking-widest text-xs uppercase mb-4 block">Why Choose Us</span>
             <h2 className="text-4xl md:text-5xl font-serif mb-12 leading-tight">A Legacy of Culinary Excellence</h2>
             <div className="space-y-8">
@@ -275,9 +275,7 @@ const Features = () => {
               ))}
             </div>
           </div>
-          <div
-            className="relative"
-          >
+          <div className="relative">
             <div className="aspect-square rounded-full border-2 border-dashed border-white/20 p-8">
               <div className="w-full h-full rounded-full overflow-hidden shadow-2xl">
                 <img 
@@ -288,15 +286,11 @@ const Features = () => {
                 />
               </div>
             </div>
-            <div
-              className="absolute top-1/4 -left-8 bg-white text-gray-900 p-6 rounded-2xl shadow-2xl"
-            >
+            <div className="absolute top-1/4 -left-8 bg-white text-gray-900 p-6 rounded-2xl shadow-2xl">
               <p className="text-3xl font-serif font-bold text-brand-primary">50+</p>
               <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Years of Excellence</p>
             </div>
-            <div
-              className="absolute bottom-1/4 -right-8 bg-white text-gray-900 p-6 rounded-2xl shadow-2xl"
-            >
+            <div className="absolute bottom-1/4 -right-8 bg-white text-gray-900 p-6 rounded-2xl shadow-2xl">
               <p className="text-3xl font-serif font-bold text-brand-primary">1000+</p>
               <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Successful Alumni</p>
             </div>
@@ -307,7 +301,9 @@ const Features = () => {
   );
 };
 
-const Gallery = () => {
+const Gallery = ({ images }: { images: any[] }) => {
+  const displayImages = images && images.length > 0 ? images.slice(0, 4) : GALLERY_IMAGES.map(url => ({ image: url, category: 'Gallery' }));
+
   return (
     <section id="gallery" className="py-24 px-6 bg-white">
       <div className="max-w-7xl mx-auto">
@@ -324,7 +320,7 @@ const Gallery = () => {
           </Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {GALLERY_IMAGES.map((img, index) => (
+          {displayImages.map((img, index) => (
             <div
               key={index}
               className={`relative overflow-hidden rounded-2xl group bg-gray-100 ${
@@ -333,15 +329,15 @@ const Gallery = () => {
               }`}
             >
               <Image 
-                src={img} 
-                alt={`Gallery ${index}`} 
+                src={img.image?.asset ? urlFor(img.image).url() : img.image} 
+                alt={img.caption || `Gallery ${index}`} 
                 fill
                 className="object-cover group-hover:scale-110 transition-transform duration-700"
                 referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                 <span className="text-white font-medium opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                  {index % 2 === 0 ? 'Culinary Arts' : 'Pastry & Baking'}
+                  {img.category || (index % 2 === 0 ? 'Culinary Arts' : 'Pastry & Baking')}
                 </span>
               </div>
             </div>
@@ -352,7 +348,9 @@ const Gallery = () => {
   );
 };
 
-const Testimonials = () => {
+const Testimonials = ({ alumni }: { alumni: any[] }) => {
+  const displayTestimonials = alumni && alumni.length > 0 ? alumni : TESTIMONIALS;
+
   return (
     <section className="py-24 px-6 bg-brand-bg overflow-hidden">
       <div className="max-w-7xl mx-auto">
@@ -364,7 +362,7 @@ const Testimonials = () => {
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
-          {TESTIMONIALS.map((t, index) => (
+          {displayTestimonials.map((t, index) => (
             <div
               key={index}
               className="p-8 rounded-3xl bg-white shadow-sm border border-gray-100 relative group hover:shadow-xl transition-all duration-500 flex flex-col"
@@ -373,11 +371,11 @@ const Testimonials = () => {
                 <Quote className="w-16 h-16" />
               </div>
               <p className="text-gray-700 italic mb-8 relative z-10 flex-grow">
-                "{t.content}"
+                "{t.story || t.content}"
               </p>
               <div className="flex items-center gap-4 relative z-10 border-t border-gray-100 pt-6">
                 <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-200 shrink-0 relative">
-                  <Image src={t.image!} alt={t.name} fill className="object-cover" referrerPolicy="no-referrer" />
+                  <Image src={t.image?.asset ? urlFor(t.image).url() : (t.image || "https://picsum.photos/seed/alumni/200/200")} alt={t.name} fill className="object-cover" referrerPolicy="no-referrer" />
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-900">{t.name}</h4>
@@ -392,8 +390,9 @@ const Testimonials = () => {
   );
 };
 
-const LatestBlog = () => {
-  const latestPosts = BLOG_POSTS.slice(0, 3);
+const LatestBlog = ({ posts }: { posts: any[] }) => {
+  const displayPosts = posts && posts.length > 0 ? posts : BLOG_POSTS.slice(0, 3);
+  
   return (
     <section className="py-24 px-6 bg-white">
       <div className="max-w-7xl mx-auto">
@@ -405,18 +404,18 @@ const LatestBlog = () => {
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
-          {latestPosts.map((post) => (
-            <article key={post.slug} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow flex flex-col">
+          {displayPosts.map((post) => (
+            <article key={post.slug?.current || post.slug} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow flex flex-col">
               <div className="relative h-48 sm:h-64 overflow-hidden">
                 <Image 
-                  src={post.image} 
+                  src={post.imageUrl || post.image || "https://picsum.photos/seed/blog/800/600"} 
                   alt={post.title} 
                   fill
                   referrerPolicy="no-referrer"
                   className="object-cover transition-transform duration-500 hover:scale-105"
                 />
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-brand-primary uppercase tracking-wider">
-                  {post.category}
+                  {post.category || 'General'}
                 </div>
               </div>
               
@@ -424,16 +423,16 @@ const LatestBlog = () => {
                 <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
-                    {post.date}
+                    {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : post.date}
                   </div>
                   <div className="flex items-center gap-1">
                     <User className="w-4 h-4" />
-                    {post.author}
+                    {post.author?.name || post.author || 'CoCAHM'}
                   </div>
                 </div>
                 
                 <h2 className="font-serif text-xl font-bold text-gray-900 mb-3 line-clamp-2">
-                  <Link href={`/blog/${post.slug}`} className="hover:text-brand-primary transition-colors">
+                  <Link href={`/blog/${post.slug?.current || post.slug}`} className="hover:text-brand-primary transition-colors">
                     {post.title}
                   </Link>
                 </h2>
@@ -443,7 +442,7 @@ const LatestBlog = () => {
                 </p>
                 
                 <Link 
-                  href={`/blog/${post.slug}`}
+                  href={`/blog/${post.slug?.current || post.slug}`}
                   className="inline-flex items-center gap-2 text-brand-primary font-medium hover:gap-3 transition-all mt-auto"
                 >
                   Read Article <ArrowRight className="w-4 h-4" />
@@ -462,8 +461,8 @@ const LatestBlog = () => {
   );
 };
 
-const UpcomingEvent = () => {
-  const nextEvent = EVENTS[0];
+const UpcomingEvent = ({ events }: { events: any[] }) => {
+  const nextEvent = events && events.length > 0 ? events[0] : EVENTS[0];
   if (!nextEvent) return null;
 
   return (
@@ -473,7 +472,7 @@ const UpcomingEvent = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="relative h-[400px] lg:h-[500px] rounded-3xl overflow-hidden shadow-2xl">
             <Image 
-              src={nextEvent.image} 
+              src={nextEvent.image?.asset ? urlFor(nextEvent.image).url() : (nextEvent.image || "https://picsum.photos/seed/event/800/600")} 
               alt={nextEvent.title} 
               fill
               referrerPolicy="no-referrer"
@@ -503,7 +502,9 @@ const UpcomingEvent = () => {
                 </div>
                 <div>
                   <div className="text-sm text-gray-500 font-medium uppercase tracking-wider">Date & Time</div>
-                  <div className="font-bold text-gray-900">{nextEvent.date} • {nextEvent.time}</div>
+                  <div className="font-bold text-gray-900">
+                    {nextEvent.date ? new Date(nextEvent.date).toLocaleDateString() : nextEvent.date} • {nextEvent.time}
+                  </div>
                 </div>
               </div>
               
@@ -519,7 +520,7 @@ const UpcomingEvent = () => {
             </div>
             
             <Link 
-              href={`/events?id=${nextEvent.id}`}
+              href={`/events`}
               className="inline-flex items-center gap-2 bg-brand-primary text-white px-8 py-4 rounded-full font-bold hover:bg-opacity-90 transition-all shadow-lg shadow-brand-primary/30 group"
             >
               Learn More About Event
@@ -533,6 +534,39 @@ const UpcomingEvent = () => {
 };
 
 export default function Home() {
+  const [homeData, setHomeData] = useState<any>(null);
+  const [events, setEvents] = useState<any[]>([]);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [alumni, setAlumni] = useState<any[]>([]);
+  const [galleryImages, setGalleryImages] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [home, featuredEvents, latestPosts, allCategories, allAlumni, allGallery] = await Promise.all([
+          client.fetch(homePageQuery),
+          client.fetch(featuredEventsQuery),
+          client.fetch(latestPostsQuery),
+          client.fetch(allCategoriesQuery),
+          client.fetch(allAlumniQuery),
+          client.fetch(allGalleryImagesQuery)
+        ]);
+        
+        setHomeData(home);
+        setEvents(featuredEvents);
+        setPosts(latestPosts);
+        setCategories(allCategories);
+        setAlumni(allAlumni);
+        setGalleryImages(allGallery);
+      } catch (error) {
+        console.error("Error fetching Sanity data:", error);
+      }
+    };
+    
+    fetchData();
+  }, []);
+
   useEffect(() => {
     if (window.location.hash) {
       const element = document.getElementById(window.location.hash.substring(1));
@@ -548,15 +582,15 @@ export default function Home() {
 
   return (
     <>
-      <Hero />
+      <Hero data={homeData} />
       <FastFacts />
-      <About />
-      <Courses />
-      <UpcomingEvent />
+      <About data={homeData} />
+      <Courses categories={categories} />
+      <UpcomingEvent events={events} />
       <Features />
-      <Gallery />
-      <Testimonials />
-      <LatestBlog />
+      <Gallery images={galleryImages} />
+      <Testimonials alumni={alumni} />
+      <LatestBlog posts={posts} />
     </>
   );
 }

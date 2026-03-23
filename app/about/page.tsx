@@ -1,11 +1,45 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Award, BookOpen, Globe, Users, CheckCircle2, ChefHat, Utensils, Coffee } from 'lucide-react';
 import { motion } from 'motion/react';
+import { client } from '@/sanity/lib/client';
+import { aboutPageQuery, allFacultyQuery } from '@/sanity/lib/queries';
+import imageUrlBuilder from '@sanity/image-url';
+import { PortableText } from '@portabletext/react';
+
+const builder = imageUrlBuilder(client);
+function urlFor(source: any) {
+  if (typeof source === 'string') {
+    return { url: () => source };
+  }
+  return builder.image(source);
+}
 
 export default function About() {
+  const [aboutData, setAboutData] = useState<any>(null);
+  const [facultyData, setFacultyData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [about, faculty] = await Promise.all([
+          client.fetch(aboutPageQuery),
+          client.fetch(allFacultyQuery)
+        ]);
+        setAboutData(about);
+        setFacultyData(faculty);
+      } catch (error) {
+        console.error("Error fetching about page data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
   const features = [
     {
       icon: <Users className="w-6 h-6 text-brand-primary" />,
@@ -48,14 +82,27 @@ export default function About() {
     { title: "Demo Theater", desc: "A tiered seating auditorium with overhead cameras where master chefs demonstrate complex techniques.", icon: <ChefHat className="w-6 h-6" />, img: "https://picsum.photos/seed/demo/600/400" }
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-brand-bg">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary"></div>
+      </div>
+    );
+  }
+
+  const heroImage = aboutData?.heroImage ? urlFor(aboutData.heroImage).url() : "/3_233174e60172ae64f15528d5df5907228b366a39-6426x4284.jpg";
+  const heroHeadline = aboutData?.heroHeadline || "Crafting Culinary Excellence Since 1971";
+  const heroText = aboutData?.heroText || "At the College of Culinary Arts and Hospitality Management (CoCAHM), we turn culinary passion into professional excellence. With over 50 years of culinary heritage, we are Ghana's premier institution for culinary education.";
+  const quote = aboutData?.quote || "We are not just churning out cooks, we are churning out individuals with transferable skills";
+
   return (
     <div className="pt-24 pb-16 bg-brand-bg min-h-screen">
       {/* Hero Section */}
       <section className="relative px-6 py-20 md:py-32 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image 
-            src="/3_233174e60172ae64f15528d5df5907228b366a39-6426x4284.jpg" 
-            alt="Chefs cooking in a professional kitchen" 
+            src={heroImage} 
+            alt="About CoCAHM" 
             fill
             className="object-cover opacity-20"
             priority
@@ -67,15 +114,43 @@ export default function About() {
           <h1
             className="text-4xl md:text-6xl font-serif font-bold text-gray-950 mb-6"
           >
-            Crafting Culinary Excellence Since 1971
+            {heroHeadline}
           </h1>
           <p
             className="text-lg md:text-xl text-gray-800 leading-relaxed max-w-3xl mx-auto"
           >
-            At the College of Culinary Arts and Hospitality Management (CoCAHM), we turn culinary passion into professional excellence. With over 50 years of culinary heritage, we are Ghana's premier institution for culinary education.
+            {heroText}
           </p>
         </div>
       </section>
+
+      {/* Our Story / Mission / Vision */}
+      {(aboutData?.story || aboutData?.missionStatement || aboutData?.visionStatement) && (
+        <section className="bg-white py-20 md:py-32">
+          <div className="max-w-4xl mx-auto px-6">
+            {aboutData.missionStatement && (
+              <div className="mb-12">
+                <h2 className="text-2xl font-serif font-bold text-brand-primary mb-4">Our Mission</h2>
+                <p className="text-lg text-gray-800 leading-relaxed">{aboutData.missionStatement}</p>
+              </div>
+            )}
+            {aboutData.visionStatement && (
+              <div className="mb-12">
+                <h2 className="text-2xl font-serif font-bold text-brand-primary mb-4">Our Vision</h2>
+                <p className="text-lg text-gray-800 leading-relaxed">{aboutData.visionStatement}</p>
+              </div>
+            )}
+            {aboutData.story && (
+              <div>
+                <h2 className="text-2xl font-serif font-bold text-brand-primary mb-4">Our Story</h2>
+                <div className="prose prose-lg text-gray-800 leading-relaxed">
+                  <PortableText value={aboutData.story} />
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Interactive Timeline Section */}
       <section className="max-w-5xl mx-auto px-6 py-16 md:py-24">
@@ -184,24 +259,20 @@ export default function About() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { name: "Chef Kwame", role: "Head of Culinary Arts", exp: "15 Years Exp. • Ex-Hilton", img: "https://picsum.photos/seed/chef1/400/500" },
-              { name: "Chef Elena", role: "Master Pastry Chef", exp: "12 Years Exp. • Le Cordon Bleu Alum", img: "https://picsum.photos/seed/chef2/400/500" },
-              { name: "Mr. Osei", role: "Hospitality Director", exp: "20 Years Exp. • Global Hotelier", img: "https://picsum.photos/seed/chef3/400/500" }
-            ].map((faculty, index) => (
+            {facultyData && facultyData.length > 0 ? facultyData.map((faculty, index) => (
               <div 
                 key={index}
                 className="group bg-gray-50 rounded-2xl p-4 hover:bg-white hover:shadow-xl transition-all duration-300"
               >
                 <div className="aspect-[4/5] rounded-xl overflow-hidden mb-6 relative">
                   <img 
-                    src={faculty.img} 
+                    src={faculty.image ? urlFor(faculty.image).url() : `https://picsum.photos/seed/${faculty.name}/400/500`} 
                     alt={faculty.name} 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     referrerPolicy="no-referrer"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                    <p className="text-white text-sm font-medium">{faculty.exp}</p>
+                    <p className="text-white text-sm font-medium">{faculty.bio || "Experienced Professional"}</p>
                   </div>
                 </div>
                 <div className="px-2 pb-2">
@@ -209,7 +280,34 @@ export default function About() {
                   <p className="text-brand-primary font-medium">{faculty.role}</p>
                 </div>
               </div>
-            ))}
+            )) : (
+              [
+                { name: "Chef Kwame", role: "Head of Culinary Arts", exp: "15 Years Exp. • Ex-Hilton", img: "https://picsum.photos/seed/chef1/400/500" },
+                { name: "Chef Elena", role: "Master Pastry Chef", exp: "12 Years Exp. • Le Cordon Bleu Alum", img: "https://picsum.photos/seed/chef2/400/500" },
+                { name: "Mr. Osei", role: "Hospitality Director", exp: "20 Years Exp. • Global Hotelier", img: "https://picsum.photos/seed/chef3/400/500" }
+              ].map((faculty, index) => (
+                <div 
+                  key={index}
+                  className="group bg-gray-50 rounded-2xl p-4 hover:bg-white hover:shadow-xl transition-all duration-300"
+                >
+                  <div className="aspect-[4/5] rounded-xl overflow-hidden mb-6 relative">
+                    <img 
+                      src={faculty.img} 
+                      alt={faculty.name} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                      <p className="text-white text-sm font-medium">{faculty.exp}</p>
+                    </div>
+                  </div>
+                  <div className="px-2 pb-2">
+                    <h3 className="text-2xl font-serif font-bold text-gray-950 mb-1">{faculty.name}</h3>
+                    <p className="text-brand-primary font-medium">{faculty.role}</p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -222,7 +320,7 @@ export default function About() {
               className="h-16 w-64 bg-brand-primary mx-auto mb-8 opacity-50" 
             />
             <blockquote className="text-2xl md:text-4xl font-serif italic leading-relaxed mb-8">
-              "We are not just churning out cooks, we are churning out individuals with transferable skills"
+              "{quote}"
             </blockquote>
           </div>
         </div>
@@ -230,3 +328,4 @@ export default function About() {
     </div>
   );
 }
+

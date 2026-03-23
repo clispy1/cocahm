@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import { 
   Utensils, Flower2, Award, Users, ArrowRight, CheckCircle2,
   ChefHat, Briefcase, GraduationCap, Building, Calendar, User, Quote,
   ChevronLeft, ChevronRight
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useMotionValue, animate } from 'motion/react';
 import { 
   SCHOOL_NAME, FULL_NAME, TAGLINE, SUB_TAGLINE, COURSE_CATEGORIES, FEATURES, TESTIMONIALS, GALLERY_IMAGES, EVENTS 
 } from '@/constants';
@@ -210,7 +210,7 @@ interface CourseCategoryProps {
   index: number;
 }
 
-const CourseCategoryCard: React.FC<CourseCategoryProps> = ({ category, index }) => {
+const CourseCategoryCard: React.FC<CourseCategoryProps> = ({ category }) => {
   return (
     <div
       className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col"
@@ -232,8 +232,8 @@ const CourseCategoryCard: React.FC<CourseCategoryProps> = ({ category, index }) 
           {category.description}
         </p>
         <div className="space-y-3 mb-8 flex-grow">
-          {category.courses?.map((course: any) => (
-            <div key={course._id} className="flex justify-between items-center text-sm border-b border-gray-100 pb-2">
+          {category.courses?.map((course: any, idx: number) => (
+            <div key={course._id || course.name || idx} className="flex justify-between items-center text-sm border-b border-gray-100 pb-2">
               <span className="font-medium text-gray-800">{course.name}</span>
               <span className="text-brand-primary bg-brand-primary/10 px-2 py-1 rounded-md text-xs whitespace-nowrap">{course.duration}</span>
             </div>
@@ -264,7 +264,7 @@ const Courses = ({ categories }: { categories: any[] }) => {
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayCategories.map((category, index) => (
-            <CourseCategoryCard key={category.id || category._id} category={category} index={index} />
+            <CourseCategoryCard key={category._id || category.id || index} category={category} index={index} />
           ))}
         </div>
       </div>
@@ -376,8 +376,57 @@ const Gallery = ({ images }: { images: any[] }) => {
 const Testimonials = ({ alumni }: { alumni: any[] }) => {
   const displayTestimonials = alumni && alumni.length > 0 ? alumni : TESTIMONIALS;
   
-  // Duplicate testimonials to ensure smooth infinite loop
-  const duplicatedTestimonials = [...displayTestimonials, ...displayTestimonials, ...displayTestimonials];
+  // Duplicate testimonials to ensure smooth infinite loop (using 4 sets for extra safety with dragging)
+  const duplicatedTestimonials = useMemo(() => [
+    ...displayTestimonials, 
+    ...displayTestimonials, 
+    ...displayTestimonials,
+    ...displayTestimonials
+  ], [displayTestimonials]);
+
+  const x = useMotionValue(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const [contentWidth, setContentWidth] = useState(0);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      setContentWidth(containerRef.current.scrollWidth / 4);
+    }
+  }, [duplicatedTestimonials]);
+
+  useEffect(() => {
+    if (isHovered || contentWidth === 0) return;
+
+    // Animate x as a number (pixels) instead of percentage to avoid type errors
+    const controls = animate(x, [x.get(), x.get() - contentWidth], {
+      duration: displayTestimonials.length * 20, // Slower speed
+      ease: "linear",
+      repeat: Infinity,
+      repeatType: "loop",
+      onUpdate: (latest) => {
+        // Infinite wrapping logic
+        if (latest <= -contentWidth * 2) {
+          x.set(latest + contentWidth);
+        } else if (latest >= 0) {
+          x.set(latest - contentWidth);
+        }
+      }
+    });
+
+    return () => controls.stop();
+  }, [isHovered, contentWidth, displayTestimonials.length, x]);
+
+  const handleDragEnd = () => {
+    setIsHovered(false);
+    const currentX = x.get();
+    // Snap back to the "middle" range to keep it infinite
+    if (currentX <= -contentWidth * 2) {
+      x.set(currentX + contentWidth);
+    } else if (currentX >= 0) {
+      x.set(currentX - contentWidth);
+    }
+  };
 
   return (
     <section className="py-24 bg-brand-bg overflow-hidden relative">
@@ -391,26 +440,23 @@ const Testimonials = ({ alumni }: { alumni: any[] }) => {
         </div>
       </div>
 
-      <div className="relative flex overflow-hidden">
+      <div 
+        className="relative flex overflow-hidden cursor-grab active:cursor-grabbing"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         <motion.div
-          animate={{
-            x: [0, -100 * displayTestimonials.length + "%"],
-          }}
-          transition={{
-            x: {
-              repeat: Infinity,
-              repeatType: "loop",
-              duration: displayTestimonials.length * 10, // Adjust speed based on item count
-              ease: "linear",
-            },
-          }}
+          ref={containerRef}
+          style={{ x, width: "fit-content" }}
+          drag="x"
+          onDragStart={() => setIsHovered(true)}
+          onDragEnd={handleDragEnd}
           className="flex gap-8 px-4"
-          style={{ width: "fit-content" }}
         >
           {duplicatedTestimonials.map((t, index) => (
             <div
-              key={index}
-              className="w-[300px] md:w-[400px] shrink-0 p-8 rounded-3xl bg-white shadow-sm border border-gray-100 relative group hover:shadow-xl transition-all duration-500 flex flex-col"
+              key={`${t._id || t.name}-${index}`}
+              className="w-[300px] md:w-[400px] shrink-0 p-8 rounded-3xl bg-white shadow-sm border border-gray-100 relative group hover:shadow-xl transition-all duration-500 flex flex-col select-none"
             >
               <div className="absolute top-8 right-8 text-brand-primary/10 group-hover:text-brand-primary/20 transition-colors">
                 <Quote className="w-12 h-12" />
@@ -424,7 +470,7 @@ const Testimonials = ({ alumni }: { alumni: any[] }) => {
                     src={t.image?.asset ? urlFor(t.image).url() : (t.image || "https://picsum.photos/seed/alumni/200/200")} 
                     alt={t.name} 
                     fill 
-                    className="object-cover" 
+                    className="object-cover pointer-events-none" 
                     referrerPolicy="no-referrer" 
                   />
                 </div>

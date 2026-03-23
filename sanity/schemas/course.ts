@@ -25,5 +25,18 @@ export default defineType({
       to: [{ type: 'category' }],
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: 'price',
+      title: 'Course Price',
+      type: 'string',
+      description: 'Optional: Enter the price of the course (e.g., "$500", "Free", "Contact us").',
+    }),
+    defineField({
+      name: 'showPrice',
+      title: 'Show Price on Website',
+      type: 'boolean',
+      description: 'Toggle this to display or hide the course price on the frontend.',
+      initialValue: true,
+    }),
   ],
 })

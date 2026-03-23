@@ -52,7 +52,7 @@ export default function Events() {
       image: event.image ? urlFor(event.image).url() : 'https://picsum.photos/seed/event/800/600',
       rawDate: eventDate
     };
-  }) : EVENTS.map(e => ({ ...e, rawDate: new Date(e.date) }));
+  }) : EVENTS.map(e => ({ ...e, slug: e.id, rawDate: new Date(e.date) }));
 
   const nextMonth = () => {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));

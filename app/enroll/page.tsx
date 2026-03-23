@@ -2,7 +2,10 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { ChevronRight, ChevronLeft, ChevronDown, CheckCircle2 } from 'lucide-react';
+
+const PaystackButton = dynamic(() => import('@/components/PaystackButton'), { ssr: false });
 import { motion, AnimatePresence } from 'motion/react';
 import { client } from '@/sanity/lib/client';
 import { allCategoriesQuery, allFaqsQuery } from '@/sanity/lib/queries';
@@ -12,6 +15,7 @@ function EnrollmentForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [paymentReference, setPaymentReference] = useState('');
 
   // Form data state
   const [formData, setFormData] = useState({
@@ -47,6 +51,15 @@ function EnrollmentForm() {
 
   // FAQ State
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+
+  const onSuccess = (reference: any) => {
+    setPaymentReference(reference.reference);
+    submitEnrollment();
+  };
+
+  const onClose = () => {
+    setIsSubmitting(false);
+  };
   const [categories, setCategories] = useState<any[]>([]);
   const [faqs, setFaqs] = useState<any[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
@@ -104,18 +117,14 @@ function EnrollmentForm() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (currentStep !== 3) return;
-    
-    setIsSubmitting(true);
+  const submitEnrollment = async () => {
     try {
       const response = await fetch('/api/enroll', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, paymentReference }),
       });
 
       if (!response.ok) {
@@ -210,7 +219,7 @@ function EnrollmentForm() {
               </div>
             </motion.div>
           ) : (
-            <form className="space-y-8" onSubmit={handleSubmit}>
+            <form className="space-y-8">
               
               {/* Step 1: Personal Details */}
               {currentStep === 1 && (
@@ -484,9 +493,10 @@ function EnrollmentForm() {
                   <ChevronRight className="w-5 h-5" />
                 </button>
               ) : (
-                <button 
-                  type="submit" 
-                  disabled={isSubmitting}
+                <PaystackButton 
+                  formData={formData} 
+                  onSuccess={onSuccess} 
+                  onClose={onClose}
                   className="bg-green-600 text-white px-8 py-3 rounded-xl font-medium hover:bg-green-700 transition-all flex items-center gap-2 shadow-lg shadow-green-600/30 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
@@ -496,11 +506,11 @@ function EnrollmentForm() {
                     </>
                   ) : (
                     <>
-                      Submit Application
+                      Pay & Submit
                       <CheckCircle2 className="w-5 h-5" />
                     </>
                   )}
-                </button>
+                </PaystackButton>
               )}
             </div>
           </form>

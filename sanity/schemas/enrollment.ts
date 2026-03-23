@@ -58,6 +58,12 @@ export default defineType({
       type: 'datetime',
       readOnly: true,
     }),
+    defineField({
+      name: 'paymentReference',
+      title: 'Payment Reference',
+      type: 'string',
+      readOnly: true,
+    }),
   ],
   preview: {
     select: {

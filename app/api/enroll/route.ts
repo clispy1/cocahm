@@ -22,11 +22,11 @@ export async function POST(request: Request) {
       phone, email, address, emergencyContact, guardianName, guardianPhone, 
       guardianResidence, lastSchool, educationLevel, programCategory, program, 
       accommodation, experience, experienceDetails, disability, disabilityDetails, 
-      allergies, allergyDetails, passportPicture 
+      allergies, allergyDetails, passportPicture, paymentReference 
     } = body;
 
     // Basic validation
-    if (!firstName || !surname || !email || !phone || !program || !passportPicture) {
+    if (!firstName || !surname || !email || !phone || !program || !passportPicture || !paymentReference) {
       return NextResponse.json(
         { message: 'Missing required fields' },
         { status: 400 }
@@ -77,6 +77,7 @@ export async function POST(request: Request) {
       allergyDetails,
       status: 'New',
       submittedAt: new Date().toISOString(),
+      paymentReference,
     };
 
     const result = await client.create(newEnrollment);

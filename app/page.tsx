@@ -151,7 +151,7 @@ const About = ({ data }: { data: any }) => {
         <div className="relative">
           <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl relative bg-gray-200">
             <img
-              src="https://picsum.photos/seed/chef-about/800/1000" 
+              src={data?.aboutImage?.asset ? urlFor(data.aboutImage).url() : "https://picsum.photos/seed/chef-about/800/1000"} 
               alt="Our Kitchen" 
               className="w-full h-full object-cover absolute inset-0"
               referrerPolicy="no-referrer"
@@ -161,14 +161,20 @@ const About = ({ data }: { data: any }) => {
 
         <div>
           <span className="text-brand-primary font-medium tracking-widest text-xs uppercase mb-4 block">Our Story</span>
-          <h2 className="text-4xl md:text-5xl font-serif mb-8 leading-tight">Crafting the Future of Hospitality</h2>
+          <h2 className="text-4xl md:text-5xl font-serif mb-8 leading-tight">{data?.aboutTitle || 'Crafting the Future of Hospitality'}</h2>
           <div className="space-y-6 text-gray-600 leading-relaxed">
-            <p>
-              Founded in 1971 by the visionary Mrs. Evelyn Addo-Boye, {SCHOOL_NAME} began its journey as DOMESCO. Today, we stand proud as Ghana's first and premier private vocational institution dedicated to culinary arts and hospitality.
-            </p>
-            <p>
-              With over five decades of excellence, we have transformed countless passionate individuals into industry-leading professionals. Our internationally recognized programs blend rigorous practical training with deep theoretical knowledge, setting the gold standard for hospitality education in West Africa.
-            </p>
+            {data?.aboutDescription ? (
+              <p>{data.aboutDescription}</p>
+            ) : (
+              <>
+                <p>
+                  Founded in 1971 by the visionary Mrs. Evelyn Addo-Boye, {SCHOOL_NAME} began its journey as DOMESCO. Today, we stand proud as Ghana's first and premier private vocational institution dedicated to culinary arts and hospitality.
+                </p>
+                <p>
+                  With over five decades of excellence, we have transformed countless passionate individuals into industry-leading professionals. Our internationally recognized programs blend rigorous practical training with deep theoretical knowledge, setting the gold standard for hospitality education in West Africa.
+                </p>
+              </>
+            )}
           </div>
           <div className="mt-10 grid grid-cols-2 gap-6 mb-8">
             <div

@@ -26,9 +26,23 @@ export async function POST(request: Request) {
     } = body;
 
     // Basic validation
-    if (!firstName || !surname || !email || !phone || !program || !passportPicture || !paymentReference) {
+    const requiredFields = [
+      'surname', 'firstName', 'dob', 'pob', 'gender', 'nationality',
+      'phone', 'email', 'address', 'emergencyContact', 'guardianName',
+      'guardianPhone', 'guardianResidence', 'lastSchool', 'educationLevel',
+      'programCategory', 'program', 'accommodation', 'experience',
+      'disability', 'allergies', 'passportPicture', 'paymentReference'
+    ];
+
+    const missingFields = requiredFields.filter(field => !body[field]);
+
+    if (body.experience === 'yes' && !body.experienceDetails) missingFields.push('experienceDetails');
+    if (body.disability === 'yes' && !body.disabilityDetails) missingFields.push('disabilityDetails');
+    if (body.allergies === 'yes' && !body.allergyDetails) missingFields.push('allergyDetails');
+
+    if (missingFields.length > 0) {
       return NextResponse.json(
-        { message: 'Missing required fields' },
+        { message: `Missing required fields: ${missingFields.join(', ')}` },
         { status: 400 }
       );
     }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { ChevronRight, ChevronLeft, ChevronDown, CheckCircle2 } from 'lucide-react';
@@ -11,6 +11,7 @@ import { client } from '@/sanity/lib/client';
 import { allCategoriesQuery, allFaqsQuery } from '@/sanity/lib/queries';
 
 function EnrollmentForm() {
+  const formRef = useRef<HTMLFormElement>(null);
   const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState(1);
   const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
@@ -58,7 +59,7 @@ function EnrollmentForm() {
 
   const onSuccess = (reference: any) => {
     setPaymentReference(reference.reference);
-    submitEnrollment();
+    submitEnrollment(reference.reference);
   };
 
   const onClose = () => {
@@ -91,11 +92,13 @@ function EnrollmentForm() {
     const categoryParam = searchParams.get('category');
     if (categoryParam) {
       setFormData(prev => ({ ...prev, programCategory: categoryParam }));
-      setCurrentStep(2); // Jump to course selection if category is pre-filled
     }
   }, [searchParams]);
 
   const nextStep = () => {
+    if (formRef.current && !formRef.current.reportValidity()) {
+      return;
+    }
     setCurrentStep(prev => Math.min(prev + 1, 3));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -121,14 +124,21 @@ function EnrollmentForm() {
     }
   };
 
-  const submitEnrollment = async () => {
+  const handleBeforePayment = () => {
+    if (formRef.current && !formRef.current.reportValidity()) {
+      return false;
+    }
+    return true;
+  };
+
+  const submitEnrollment = async (ref?: string) => {
     try {
       const response = await fetch('/api/enroll', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...formData, paymentReference }),
+        body: JSON.stringify({ ...formData, paymentReference: ref || paymentReference }),
       });
 
       if (!response.ok) {
@@ -291,7 +301,7 @@ function EnrollmentForm() {
               </div>
             </motion.div>
           ) : (
-            <form className="space-y-8">
+            <form ref={formRef} className="space-y-8">
               
               {/* Step 1: Personal Details */}
               {currentStep === 1 && (
@@ -415,6 +425,7 @@ function EnrollmentForm() {
                             value={category._id || category.id}
                             checked={formData.programCategory === (category._id || category.id)}
                             onChange={handleInputChange}
+                            required
                             className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300"
                           />
                           <span className="ml-3 font-medium text-gray-900">{category.title}</span>
@@ -440,6 +451,7 @@ function EnrollmentForm() {
                                 value={course._id || course.id}
                                 checked={formData.program === (course._id || course.id)}
                                 onChange={handleInputChange}
+                                required
                                 className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300"
                               />
                               <span className="ml-3 font-medium text-gray-900">{course.name}</span>
@@ -458,11 +470,11 @@ function EnrollmentForm() {
                     <p className="text-sm text-gray-500 mb-4">Hostel facilities are available for students who wish to stay on campus (billed per 3 months).</p>
                     <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                       <label className="flex items-center cursor-pointer">
-                        <input type="radio" name="accommodation" value="yes" checked={formData.accommodation === 'yes'} onChange={handleInputChange} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                        <input type="radio" name="accommodation" value="yes" checked={formData.accommodation === 'yes'} onChange={handleInputChange} required className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
                         <span className="ml-2 text-gray-700">Yes, I need a hostel</span>
                       </label>
                       <label className="flex items-center cursor-pointer">
-                        <input type="radio" name="accommodation" value="no" checked={formData.accommodation === 'no'} onChange={handleInputChange} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                        <input type="radio" name="accommodation" value="no" checked={formData.accommodation === 'no'} onChange={handleInputChange} required className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
                         <span className="ml-2 text-gray-700">No, I will commute from home</span>
                       </label>
                     </div>
@@ -492,18 +504,18 @@ function EnrollmentForm() {
                     <label className="block text-sm font-medium text-gray-900 mb-3">Do you have prior experience / education related to culinary arts?</label>
                     <div className="flex gap-6 mb-4">
                       <label className="flex items-center cursor-pointer">
-                        <input type="radio" name="experience" value="yes" checked={formData.experience === 'yes'} onChange={handleInputChange} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                        <input type="radio" name="experience" value="yes" checked={formData.experience === 'yes'} onChange={handleInputChange} required className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
                         <span className="ml-2 text-gray-700">Yes</span>
                       </label>
                       <label className="flex items-center cursor-pointer">
-                        <input type="radio" name="experience" value="no" checked={formData.experience === 'no'} onChange={handleInputChange} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                        <input type="radio" name="experience" value="no" checked={formData.experience === 'no'} onChange={handleInputChange} required className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
                         <span className="ml-2 text-gray-700">No</span>
                       </label>
                     </div>
                     {formData.experience === 'yes' && (
                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
                         <label className="block text-sm font-medium text-gray-700 mb-2 mt-4">If Yes, state details:</label>
-                        <textarea name="experienceDetails" value={formData.experienceDetails} onChange={handleInputChange} rows={2} className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900"></textarea>
+                        <textarea required name="experienceDetails" value={formData.experienceDetails} onChange={handleInputChange} rows={2} className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900"></textarea>
                       </motion.div>
                     )}
                   </div>
@@ -513,18 +525,18 @@ function EnrollmentForm() {
                       <label className="block text-sm font-medium text-gray-900 mb-3">Do you have any disabilities?</label>
                       <div className="flex gap-6 mb-4">
                         <label className="flex items-center cursor-pointer">
-                          <input type="radio" name="disability" value="yes" checked={formData.disability === 'yes'} onChange={handleInputChange} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                          <input type="radio" name="disability" value="yes" checked={formData.disability === 'yes'} onChange={handleInputChange} required className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
                           <span className="ml-2 text-gray-700">Yes</span>
                         </label>
                         <label className="flex items-center cursor-pointer">
-                          <input type="radio" name="disability" value="no" checked={formData.disability === 'no'} onChange={handleInputChange} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                          <input type="radio" name="disability" value="no" checked={formData.disability === 'no'} onChange={handleInputChange} required className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
                           <span className="ml-2 text-gray-700">No</span>
                         </label>
                       </div>
                       {formData.disability === 'yes' && (
                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
                           <label className="block text-sm font-medium text-gray-700 mb-2 mt-4">If Yes, state:</label>
-                          <input name="disabilityDetails" value={formData.disabilityDetails} onChange={handleInputChange} type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+                          <input required name="disabilityDetails" value={formData.disabilityDetails} onChange={handleInputChange} type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                         </motion.div>
                       )}
                     </div>
@@ -533,18 +545,18 @@ function EnrollmentForm() {
                       <label className="block text-sm font-medium text-gray-900 mb-3">Do you have any allergies?</label>
                       <div className="flex gap-6 mb-4">
                         <label className="flex items-center cursor-pointer">
-                          <input type="radio" name="allergies" value="yes" checked={formData.allergies === 'yes'} onChange={handleInputChange} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                          <input type="radio" name="allergies" value="yes" checked={formData.allergies === 'yes'} onChange={handleInputChange} required className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
                           <span className="ml-2 text-gray-700">Yes</span>
                         </label>
                         <label className="flex items-center cursor-pointer">
-                          <input type="radio" name="allergies" value="no" checked={formData.allergies === 'no'} onChange={handleInputChange} className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
+                          <input type="radio" name="allergies" value="no" checked={formData.allergies === 'no'} onChange={handleInputChange} required className="w-4 h-4 text-brand-primary focus:ring-brand-primary border-gray-300" />
                           <span className="ml-2 text-gray-700">No</span>
                         </label>
                       </div>
                       {formData.allergies === 'yes' && (
                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
                           <label className="block text-sm font-medium text-gray-700 mb-2 mt-4">If Yes, state:</label>
-                          <input name="allergyDetails" value={formData.allergyDetails} onChange={handleInputChange} type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+                          <input required name="allergyDetails" value={formData.allergyDetails} onChange={handleInputChange} type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
                         </motion.div>
                       )}
                     </div>
@@ -589,6 +601,7 @@ function EnrollmentForm() {
                   formData={formData} 
                   onSuccess={onSuccess} 
                   onClose={onClose}
+                  onBeforePayment={handleBeforePayment}
                   className="bg-green-600 text-white px-8 py-3 rounded-xl font-medium hover:bg-green-700 transition-all flex items-center gap-2 shadow-lg shadow-green-600/30 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (

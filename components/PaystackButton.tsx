@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-export default function PaystackButton({ formData, onSuccess, onClose, children, className, disabled }: { formData: any, onSuccess: (ref: any) => void, onClose: () => void, children: React.ReactNode, className?: string, disabled?: boolean }) {
+export default function PaystackButton({ formData, onSuccess, onClose, onBeforePayment, children, className, disabled }: { formData: any, onSuccess: (ref: any) => void, onClose: () => void, onBeforePayment?: () => boolean | Promise<boolean>, children: React.ReactNode, className?: string, disabled?: boolean }) {
   const [scriptLoaded, setScriptLoaded] = useState(false);
 
   useEffect(() => {
@@ -23,7 +23,12 @@ export default function PaystackButton({ formData, onSuccess, onClose, children,
     };
   }, []);
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
+    if (onBeforePayment) {
+      const canProceed = await onBeforePayment();
+      if (!canProceed) return;
+    }
+
     if (!scriptLoaded || !window.PaystackPop) {
       alert('Paystack is still loading. Please try again in a moment.');
       return;

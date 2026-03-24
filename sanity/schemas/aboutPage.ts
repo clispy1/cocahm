@@ -42,5 +42,32 @@ export default defineType({
       title: 'Quote',
       type: 'text',
     }),
+    defineField({
+      name: 'storyImage1',
+      title: 'Story Image 1 (Top)',
+      type: 'image',
+      options: { hotspot: true },
+    }),
+    defineField({
+      name: 'storyImage2',
+      title: 'Story Image 2 (Bottom)',
+      type: 'image',
+      options: { hotspot: true },
+    }),
+    defineField({
+      name: 'facilities',
+      title: 'Facilities',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'title', title: 'Title', type: 'string' },
+            { name: 'description', title: 'Description', type: 'text' },
+            { name: 'image', title: 'Image', type: 'image', options: { hotspot: true } },
+          ],
+        },
+      ],
+    }),
   ],
 })

@@ -10,6 +10,16 @@ import { SCHOOL_NAME } from '@/constants';
 import { client } from '@/sanity/lib/client';
 import { siteSettingsQuery } from '@/sanity/lib/queries';
 
+import imageUrlBuilder from '@sanity/image-url';
+
+const builder = imageUrlBuilder(client);
+function urlFor(source: any) {
+  if (typeof source === 'string') {
+    return { url: () => source };
+  }
+  return builder.image(source);
+}
+
 export const Navbar = () => {
   const pathname = usePathname();
   const isHome = pathname === '/';
@@ -61,11 +71,19 @@ export const Navbar = () => {
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-6'}`}>
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2">
-          <img 
-            src="/logo-w.svg" 
-            alt={settings?.title || SCHOOL_NAME} 
-            className={`h-10 w-auto ${isScrolled ? 'brightness-0' : 'brightness-100'}`}
-          />
+          {settings?.logo ? (
+            <img 
+              src={urlFor(settings.logo).url()} 
+              alt={settings?.title || SCHOOL_NAME} 
+              className={`h-10 w-auto ${isScrolled ? 'brightness-0' : 'brightness-100'}`}
+            />
+          ) : (
+            <img 
+              src="/logo-w.svg" 
+              alt={settings?.title || SCHOOL_NAME} 
+              className={`h-10 w-auto ${isScrolled ? 'brightness-0' : 'brightness-100'}`}
+            />
+          )}
         </Link>
 
         {/* Desktop Nav */}
@@ -174,11 +192,19 @@ export const Footer = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-8">
-              <img 
-                src="/logo-w.svg" 
-                alt={settings?.title || SCHOOL_NAME} 
-                className="h-12 w-auto brightness-100"
-              />
+              {settings?.logo ? (
+                <img 
+                  src={urlFor(settings.logo).url()} 
+                  alt={settings?.title || SCHOOL_NAME} 
+                  className="h-12 w-auto brightness-100"
+                />
+              ) : (
+                <img 
+                  src="/logo-w.svg" 
+                  alt={settings?.title || SCHOOL_NAME} 
+                  className="h-12 w-auto brightness-100"
+                />
+              )}
             </div>
             <p className="text-gray-400 text-sm leading-relaxed mb-8">
               {settings?.description || "Empowering the next generation of culinary leaders through professional training, industry expertise, and a passion for excellence."}

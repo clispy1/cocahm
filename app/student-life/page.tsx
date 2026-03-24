@@ -111,8 +111,8 @@ export default function StudentLife() {
               <img src={heroImage} alt="Campus Experience" className="rounded-2xl w-full h-full object-cover col-span-2" referrerPolicy="no-referrer" />
             ) : (
               <>
-                <img src="https://picsum.photos/seed/student1/400/500" alt="Students cooking" className="rounded-2xl w-full h-full object-cover" referrerPolicy="no-referrer" />
-                <img src="https://picsum.photos/seed/student2/400/500" alt="Students plating" className="rounded-2xl w-full h-full object-cover mt-8" referrerPolicy="no-referrer" />
+                <img src={pageData?.sideImage1 ? urlFor(pageData.sideImage1).url() : "https://picsum.photos/seed/student1/400/500"} alt="Students cooking" className="rounded-2xl w-full h-full object-cover" referrerPolicy="no-referrer" />
+                <img src={pageData?.sideImage2 ? urlFor(pageData.sideImage2).url() : "https://picsum.photos/seed/student2/400/500"} alt="Students plating" className="rounded-2xl w-full h-full object-cover mt-8" referrerPolicy="no-referrer" />
               </>
             )}
           </motion.div>

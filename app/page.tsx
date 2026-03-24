@@ -30,7 +30,18 @@ const Hero = ({ data }: { data: any }) => {
   return (
     <section className="relative h-screen h-[100dvh] min-h-[600px] flex items-center justify-center overflow-hidden bg-gray-950">
       <div className="absolute inset-0 z-0">
-        {data?.heroImage ? (
+        {data?.heroVideoUrl ? (
+          <video 
+            autoPlay 
+            loop 
+            muted 
+            playsInline 
+            className="w-full h-full object-cover"
+            poster={data?.heroImage ? urlFor(data.heroImage).url() : "https://picsum.photos/seed/culinary-hero/1920/1080"}
+          >
+            <source src={data.heroVideoUrl} type="video/mp4" />
+          </video>
+        ) : data?.heroImage ? (
           <Image 
             src={urlFor(data.heroImage).url()} 
             alt="Hero Background" 
@@ -88,7 +99,7 @@ const Hero = ({ data }: { data: any }) => {
   );
 };
 
-const FastFacts = () => {
+const FastFacts = ({ data }: { data: any }) => {
   const facts = [
     { icon: <ChefHat className="w-8 h-8" />, number: "15+", label: "Expert Instructors" },
     { icon: <Briefcase className="w-8 h-8" />, number: "95%", label: "Employment Rate" },
@@ -98,7 +109,7 @@ const FastFacts = () => {
 
   return (
     <section className="py-16 bg-gray-950 text-white relative overflow-hidden border-t border-white/10">
-      <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/kitchen-bg/1920/1080')] opacity-5 bg-cover bg-center mix-blend-overlay" />
+      <div className="absolute inset-0 opacity-5 bg-cover bg-center mix-blend-overlay" style={{ backgroundImage: `url(${data?.fastFactsBackgroundImage ? urlFor(data.fastFactsBackgroundImage).url() : 'https://picsum.photos/seed/kitchen-bg/1920/1080'})` }} />
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-white/10">
           {facts.map((fact, index) => (
@@ -121,7 +132,7 @@ const QuoteSection = ({ data }: { data: any }) => {
     <section className="py-20 bg-gray-900 text-white relative overflow-hidden">
       <div className="absolute inset-0 opacity-10">
         <Image 
-          src="https://picsum.photos/seed/culinary-quote/1920/1080" 
+          src={data?.quoteBackgroundImage ? urlFor(data.quoteBackgroundImage).url() : "https://picsum.photos/seed/culinary-quote/1920/1080"} 
           alt="Background" 
           fill 
           className="object-cover"
@@ -278,7 +289,7 @@ const Courses = ({ categories }: { categories: any[] }) => {
   );
 };
 
-const Features = () => {
+const Features = ({ data }: { data: any }) => {
   return (
     <section id="features" className="py-24 px-6 bg-brand-primary text-white overflow-hidden relative">
       <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
@@ -310,7 +321,7 @@ const Features = () => {
             <div className="aspect-square rounded-full border-2 border-dashed border-white/20 p-8">
               <div className="w-full h-full rounded-full overflow-hidden shadow-2xl">
                 <img 
-                  src="https://picsum.photos/seed/culinary-feature/1000/1000" 
+                  src={data?.featuresImage ? urlFor(data.featuresImage).url() : "https://picsum.photos/seed/culinary-feature/1000/1000"} 
                   alt="Culinary Training" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
@@ -686,11 +697,11 @@ export default function Home() {
   return (
     <>
       <Hero data={homeData} />
-      <FastFacts />
+      <FastFacts data={homeData} />
       <About data={homeData} />
       <Courses categories={categories} />
       <UpcomingEvent events={events} />
-      <Features />
+      <Features data={homeData} />
       <Gallery images={galleryImages} />
       <QuoteSection data={homeData} />
       <Testimonials alumni={alumni} />

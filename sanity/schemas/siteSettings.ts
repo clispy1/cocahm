@@ -60,5 +60,11 @@ export default defineType({
         },
       ],
     }),
+    defineField({
+      name: 'ctaBackgroundImage',
+      title: 'Global Call to Action Background Image',
+      type: 'image',
+      options: { hotspot: true },
+    }),
   ],
 })

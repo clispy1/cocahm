@@ -76,7 +76,12 @@ export default function About() {
     { year: "Today", title: "A Culinary Hub", desc: "Training hundreds of students annually and setting the standard for hospitality in West Africa." }
   ];
 
-  const facilities = [
+  const facilities = aboutData?.facilities?.length > 0 ? aboutData.facilities.map((fac: any) => ({
+    title: fac.title,
+    desc: fac.description,
+    icon: <Utensils className="w-6 h-6" />, // Default icon, could be made dynamic if needed
+    img: fac.image ? urlFor(fac.image).url() : "https://picsum.photos/seed/hotkitchen/600/400"
+  })) : [
     { title: "The Hot Kitchen", desc: "Equipped with industrial stoves, combi ovens, and professional-grade stations for high-volume cooking.", icon: <Utensils className="w-6 h-6" />, img: "https://picsum.photos/seed/hotkitchen/600/400" },
     { title: "Pastry & Baking Lab", desc: "Climate-controlled environment with marble countertops, perfect for delicate sugarcraft and chocolate work.", icon: <Coffee className="w-6 h-6" />, img: "https://picsum.photos/seed/pastrylab/600/400" },
     { title: "Demo Theater", desc: "A tiered seating auditorium with overhead cameras where master chefs demonstrate complex techniques.", icon: <ChefHat className="w-6 h-6" />, img: "https://picsum.photos/seed/demo/600/400" }
@@ -160,7 +165,7 @@ export default function About() {
                 className="aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl relative mt-12"
               >
                 <Image 
-                  src="https://picsum.photos/seed/chef1/600/800" 
+                  src={aboutData?.storyImage1 ? urlFor(aboutData.storyImage1).url() : "https://picsum.photos/seed/chef1/600/800"} 
                   alt="Culinary Student" 
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-700"
@@ -175,7 +180,7 @@ export default function About() {
                 className="aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl relative -mt-12"
               >
                 <Image 
-                  src="https://picsum.photos/seed/chef2/600/800" 
+                  src={aboutData?.storyImage2 ? urlFor(aboutData.storyImage2).url() : "https://picsum.photos/seed/chef2/600/800"} 
                   alt="Culinary Professional" 
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-700"

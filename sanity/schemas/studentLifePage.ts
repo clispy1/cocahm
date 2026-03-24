@@ -22,5 +22,17 @@ export default defineType({
       type: 'array',
       of: [{ type: 'block' }, { type: 'image' }],
     }),
+    defineField({
+      name: 'sideImage1',
+      title: 'Side Image 1 (Top)',
+      type: 'image',
+      options: { hotspot: true },
+    }),
+    defineField({
+      name: 'sideImage2',
+      title: 'Side Image 2 (Bottom)',
+      type: 'image',
+      options: { hotspot: true },
+    }),
   ],
 })

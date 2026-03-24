@@ -1,10 +1,20 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { TESTIMONIALS } from '@/constants';
 import { Quote, Briefcase, Award, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { client } from '@/sanity/lib/client';
+import { allAlumniQuery, siteSettingsQuery } from '@/sanity/lib/queries';
+import imageUrlBuilder from '@sanity/image-url';
+
+const builder = imageUrlBuilder(client);
+function urlFor(source: any) {
+  if (typeof source === 'string') {
+    return { url: () => source };
+  }
+  return builder.image(source);
+}
 
 const ALUMNI_STORIES = [
   {
@@ -50,9 +60,40 @@ const ALUMNI_STORIES = [
 ];
 
 export default function Alumni() {
+  const [alumniData, setAlumniData] = useState<any[]>([]);
+  const [settings, setSettings] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    async function fetchData() {
+      try {
+        const [alumni, siteSettings] = await Promise.all([
+          client.fetch(allAlumniQuery),
+          client.fetch(siteSettingsQuery)
+        ]);
+        setAlumniData(alumni);
+        setSettings(siteSettings);
+      } catch (error) {
+        console.error("Error fetching alumni data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchData();
   }, []);
+
+  const displayAlumni = alumniData.length > 0 ? alumniData : ALUMNI_STORIES;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-brand-bg">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-32 pb-24 px-6 min-h-screen bg-brand-bg">
@@ -66,12 +107,12 @@ export default function Alumni() {
         </div>
 
         <div className="space-y-24">
-          {ALUMNI_STORIES.map((alumnus, index) => (
-            <div key={alumnus.id} className={`flex flex-col lg:flex-row gap-12 items-center ${index % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}>
+          {displayAlumni.map((alumnus, index) => (
+            <div key={alumnus._id || alumnus.id} className={`flex flex-col lg:flex-row gap-12 items-center ${index % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}>
               <div className="lg:w-1/2 relative">
                 <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl relative z-10">
                   <Image 
-                    src={alumnus.image} 
+                    src={alumnus.image?.asset ? urlFor(alumnus.image).url() : (alumnus.image || `https://picsum.photos/seed/${alumnus.name}/800/800`)} 
                     alt={alumnus.name} 
                     fill
                     referrerPolicy="no-referrer"
@@ -103,7 +144,7 @@ export default function Alumni() {
 
                 <div className="space-y-3">
                   <h4 className="font-bold text-gray-900 uppercase tracking-wider text-sm mb-4">Key Achievements</h4>
-                  {alumnus.achievements.map((achievement, idx) => (
+                  {alumnus.achievements?.map((achievement: string, idx: number) => (
                     <div key={idx} className="flex items-center gap-3 text-gray-600">
                       <div className="w-1.5 h-1.5 rounded-full bg-brand-primary shrink-0" />
                       <span>{achievement}</span>
@@ -116,7 +157,7 @@ export default function Alumni() {
         </div>
 
         <div className="mt-32 text-center bg-brand-primary text-white rounded-3xl p-12 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/kitchen-bg/1920/1080')] opacity-10 bg-cover bg-center mix-blend-overlay" />
+          <div className="absolute inset-0 opacity-10 bg-cover bg-center mix-blend-overlay" style={{ backgroundImage: `url(${settings?.ctaBackgroundImage ? urlFor(settings.ctaBackgroundImage).url() : 'https://picsum.photos/seed/kitchen-bg/1920/1080'})` }} />
           <div className="relative z-10">
             <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6">Ready to Write Your Own Success Story?</h2>
             <p className="text-white/80 max-w-2xl mx-auto mb-10 text-lg">

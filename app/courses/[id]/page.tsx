@@ -8,6 +8,7 @@ import { COURSE_CATEGORIES } from '@/constants';
 import { Clock, BookOpen, Briefcase, CheckCircle2, ArrowLeft, ArrowRight } from 'lucide-react';
 import { client } from '@/sanity/lib/client';
 import { groq } from 'next-sanity';
+import { siteSettingsQuery } from '@/sanity/lib/queries';
 import imageUrlBuilder from '@sanity/image-url';
 
 const builder = imageUrlBuilder(client);
@@ -29,15 +30,21 @@ export default function CourseDetail() {
   const id = params.id as string;
 
   const [category, setCategory] = useState<any>(null);
+  const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     
-    async function fetchCategory() {
+    async function fetchData() {
       try {
-        const data = await client.fetch(categoryQuery, { id });
+        const [data, siteSettings] = await Promise.all([
+          client.fetch(categoryQuery, { id }),
+          client.fetch(siteSettingsQuery)
+        ]);
         
+        setSettings(siteSettings);
+
         if (data) {
           setCategory({
             id: data.slug?.current || data._id,
@@ -75,7 +82,7 @@ export default function CourseDetail() {
     }
 
     if (id) {
-      fetchCategory();
+      fetchData();
     }
   }, [id, router]);
 
@@ -185,7 +192,7 @@ export default function CourseDetail() {
         </div>
 
         <div className="bg-gray-950 text-white rounded-3xl p-12 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/kitchen-bg/1920/1080')] opacity-10 bg-cover bg-center mix-blend-overlay" />
+          <div className="absolute inset-0 opacity-10 bg-cover bg-center mix-blend-overlay" style={{ backgroundImage: `url(${settings?.ctaBackgroundImage ? urlFor(settings.ctaBackgroundImage).url() : 'https://picsum.photos/seed/kitchen-bg/1920/1080'})` }} />
           <div className="relative z-10">
             <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6">Ready to Start Your Culinary Journey?</h2>
             <p className="text-white/80 max-w-2xl mx-auto mb-10 text-lg">

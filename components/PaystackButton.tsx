@@ -32,7 +32,7 @@ export default function PaystackButton({ formData, onSuccess, onClose, children,
     const handler = window.PaystackPop.setup({
       key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
       email: formData.email,
-      amount: 50000, // 500 GHS in pesewas
+      amount: 10000, // 100 GHS in pesewas
       currency: 'GHS',
       ref: (new Date()).getTime().toString(),
       callback: (response: any) => {

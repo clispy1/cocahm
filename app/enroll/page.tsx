@@ -14,6 +14,9 @@ function EnrollmentForm() {
   const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState(1);
   const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
+  const [hasCheckedFunds, setHasCheckedFunds] = useState(false);
+  const [hasCheckedPhoto, setHasCheckedPhoto] = useState(false);
+  const [hasCheckedDocs, setHasCheckedDocs] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [paymentReference, setPaymentReference] = useState('');
@@ -195,12 +198,47 @@ function EnrollmentForm() {
                 </section>
                 <section>
                   <h3 className="text-xl font-bold text-gray-950 mb-2">Payment</h3>
-                  <p>A non-refundable application fee is required to process your enrollment. Payment is handled securely through Paystack.</p>
+                  <p>A non-refundable application fee of <span className="font-bold text-brand-primary">100 GHS</span> is required to process your enrollment. Payment is handled securely through Paystack at the final step of this form.</p>
+                </section>
+                
+                <section className="bg-brand-primary/5 p-6 rounded-xl border border-brand-primary/20 mt-8">
+                  <h3 className="text-lg font-bold text-gray-950 mb-4">Pre-requisite Checklist</h3>
+                  <p className="text-sm text-gray-600 mb-4">Please confirm you have the following ready before starting your application:</p>
+                  <div className="space-y-4">
+                    <label className="flex items-start gap-3 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={hasCheckedFunds}
+                        onChange={(e) => setHasCheckedFunds(e.target.checked)}
+                        className="mt-1 w-5 h-5 text-brand-primary focus:ring-brand-primary border-gray-300 rounded" 
+                      />
+                      <span className="text-gray-700">I have 100 GHS ready in my Mobile Money wallet or Bank Account for the application fee.</span>
+                    </label>
+                    <label className="flex items-start gap-3 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={hasCheckedPhoto}
+                        onChange={(e) => setHasCheckedPhoto(e.target.checked)}
+                        className="mt-1 w-5 h-5 text-brand-primary focus:ring-brand-primary border-gray-300 rounded" 
+                      />
+                      <span className="text-gray-700">I have a clear, recent passport-sized photograph saved on my device ready to upload.</span>
+                    </label>
+                    <label className="flex items-start gap-3 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={hasCheckedDocs}
+                        onChange={(e) => setHasCheckedDocs(e.target.checked)}
+                        className="mt-1 w-5 h-5 text-brand-primary focus:ring-brand-primary border-gray-300 rounded" 
+                      />
+                      <span className="text-gray-700">I have my academic details and emergency contact information ready.</span>
+                    </label>
+                  </div>
                 </section>
               </div>
               <button 
                 onClick={() => setHasAcceptedTerms(true)}
-                className="w-full bg-brand-primary text-white px-8 py-4 rounded-xl font-bold hover:bg-opacity-90 transition-all shadow-lg shadow-brand-primary/30 flex items-center justify-center gap-2"
+                disabled={!hasCheckedFunds || !hasCheckedPhoto || !hasCheckedDocs}
+                className="w-full bg-brand-primary text-white px-8 py-4 rounded-xl font-bold hover:bg-opacity-90 transition-all shadow-lg shadow-brand-primary/30 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
               >
                 Proceed to Application
                 <ChevronRight className="w-5 h-5" />
@@ -301,6 +339,26 @@ function EnrollmentForm() {
                     <div>
                       <label className="block text-sm font-medium text-gray-800 mb-2">Email</label>
                       <input required name="email" value={formData.email} onChange={handleInputChange} type="email" className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900" />
+                    </div>
+
+                    <div className="md:col-span-3">
+                      <label className="block text-sm font-medium text-gray-800 mb-2">Passport Picture</label>
+                      <div className="flex items-center gap-4">
+                        {formData.passportPicture && (
+                          <div className="w-20 h-20 rounded-xl overflow-hidden border border-gray-200 shrink-0">
+                            <img src={formData.passportPicture} alt="Passport Preview" className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                        <input 
+                          required={!formData.passportPicture} 
+                          name="passportPicture" 
+                          onChange={handleInputChange} 
+                          type="file" 
+                          accept="image/*"
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-primary/10 file:text-brand-primary hover:file:bg-brand-primary/20" 
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500 mt-2">Upload a clear, recent passport-sized photograph (Max 2MB).</p>
                     </div>
 
                     <div className="md:col-span-2">

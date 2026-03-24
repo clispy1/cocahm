@@ -151,25 +151,37 @@ export default function About() {
               )}
             </div>
             
-            <div className="grid grid-cols-2 gap-6 sticky top-24">
-              <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-xl relative">
+            <div className="grid grid-cols-2 gap-6 sticky top-32">
+              <motion.div 
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+                className="aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl relative mt-12"
+              >
                 <Image 
-                  src="https://picsum.photos/seed/portrait1/600/800" 
-                  alt="Portrait 1" 
+                  src="https://picsum.photos/seed/chef1/600/800" 
+                  alt="Culinary Student" 
                   fill
-                  className="object-cover"
+                  className="object-cover hover:scale-105 transition-transform duration-700"
                   referrerPolicy="no-referrer"
                 />
-              </div>
-              <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-xl relative">
+              </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl relative -mt-12"
+              >
                 <Image 
-                  src="https://picsum.photos/seed/portrait2/600/800" 
-                  alt="Portrait 2" 
+                  src="https://picsum.photos/seed/chef2/600/800" 
+                  alt="Culinary Professional" 
                   fill
-                  className="object-cover"
+                  className="object-cover hover:scale-105 transition-transform duration-700"
                   referrerPolicy="no-referrer"
                 />
-              </div>
+              </motion.div>
             </div>
           </div>
         </section>

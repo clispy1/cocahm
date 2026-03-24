@@ -85,6 +85,7 @@ export async function POST(request: Request) {
     // Send email notification if RESEND_API_KEY is configured
     if (process.env.RESEND_API_KEY) {
       try {
+        // Send to Admin
         await resend.emails.send({
           from: 'CoCAHM Admissions <onboarding@resend.dev>',
           to: process.env.ADMIN_EMAIL || 'info@cocahm.com',
@@ -96,6 +97,24 @@ export async function POST(request: Request) {
             <p><strong>Phone:</strong> ${phone}</p>
             <p><strong>Program ID:</strong> ${program}</p>
             <p>Please log in to the Sanity Studio to view the full application details.</p>
+          `,
+        });
+
+        // Send to Applicant
+        await resend.emails.send({
+          from: 'CoCAHM Admissions <onboarding@resend.dev>',
+          to: email,
+          subject: `Application Received - CoCAHM`,
+          html: `
+            <h2>Application Received</h2>
+            <p>Dear ${firstName},</p>
+            <p>Thank you for applying to the College of Culinary Arts and Hospitality Management (CoCAHM).</p>
+            <p>We have successfully received your application and payment (Reference: ${paymentReference}).</p>
+            <p>Our admissions team will review your details within 48 hours. You will receive another email with instructions for the entrance interview.</p>
+            <p>Please prepare your academic transcripts and identification documents.</p>
+            <br/>
+            <p>Best regards,</p>
+            <p><strong>CoCAHM Admissions Team</strong></p>
           `,
         });
       } catch (emailError) {

@@ -81,9 +81,12 @@ export default function Courses() {
         <div className="mb-12 text-center">
           <span className="text-brand-primary font-medium tracking-widest text-xs uppercase mb-4 block">Academic Excellence</span>
           <h1 className="text-4xl md:text-5xl font-serif mb-6">Our Programs & Courses</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
+          <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed mb-8">
             From comprehensive diplomas to intensive crash courses, our curriculum is designed to equip you with the practical skills and theoretical knowledge needed to thrive in the global hospitality industry.
           </p>
+          <blockquote className="text-xl md:text-2xl font-serif italic text-gray-800 border-l-4 border-brand-primary pl-6 py-2 max-w-2xl mx-auto">
+            "We are not just churning out cooks, we are churning out individuals with transferable skills."
+          </blockquote>
         </div>
 
         {/* Filter Bar */}

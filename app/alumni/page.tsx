@@ -101,9 +101,12 @@ export default function Alumni() {
         <div className="mb-16 text-center">
           <span className="text-brand-primary font-medium tracking-widest text-xs uppercase mb-4 block">Our Legacy</span>
           <h1 className="text-4xl md:text-5xl font-serif mb-6">Alumni Success Stories</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+          <p className="text-gray-600 max-w-2xl mx-auto text-lg mb-8">
             Discover how CoCAHM graduates are shaping the culinary and hospitality landscape in Ghana and across the globe.
           </p>
+          <blockquote className="text-xl md:text-2xl font-serif italic text-gray-800 border-l-4 border-brand-primary pl-6 py-2 max-w-2xl mx-auto">
+            "We are not just churning out cooks, we are churning out individuals with transferable skills."
+          </blockquote>
         </div>
 
         <div className="space-y-24">

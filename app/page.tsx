@@ -141,7 +141,7 @@ const QuoteSection = ({ data }: { data: any }) => {
       <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
         <Quote className="w-10 h-10 text-brand-primary mx-auto mb-6 opacity-40" />
         <h2 className="text-xl md:text-2xl lg:text-3xl font-serif italic leading-relaxed mb-8">
-          "{data?.welcomeMessage || 'We are not just churning out cooks, we are churning out individuals with transferable skills'}"
+          {data?.welcomeMessage || 'We are not just churning out cooks, we are churning out individuals with transferable skills'}
         </h2>
         <div className="flex items-center justify-center gap-4">
           <div className="w-8 h-[1px] bg-brand-primary/50" />

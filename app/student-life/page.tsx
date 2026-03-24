@@ -75,14 +75,17 @@ export default function StudentLife() {
           <span className="text-brand-primary font-medium tracking-widest text-xs uppercase mb-4 block">Campus Experience</span>
           <h1 className="text-4xl md:text-5xl font-serif mb-6 text-gray-950">{headline}</h1>
           {pageData?.content ? (
-            <div className="text-gray-800 max-w-2xl mx-auto text-lg leading-relaxed prose prose-lg">
+            <div className="text-gray-800 max-w-2xl mx-auto text-lg leading-relaxed prose prose-lg mb-8">
               <PortableText value={pageData.content} />
             </div>
           ) : (
-            <p className="text-gray-800 max-w-2xl mx-auto text-lg leading-relaxed">
+            <p className="text-gray-800 max-w-2xl mx-auto text-lg leading-relaxed mb-8">
               Life at CoCAHM is vibrant, challenging, and deeply rewarding. Beyond the kitchens and classrooms, our students build lifelong friendships, network with industry leaders, and immerse themselves in the rich culinary culture of Ghana.
             </p>
           )}
+          <blockquote className="text-xl md:text-2xl font-serif italic text-gray-800 border-l-4 border-brand-primary pl-6 py-2 max-w-2xl mx-auto">
+            "We are not just churning out cooks, we are churning out individuals with transferable skills."
+          </blockquote>
         </div>
 
         {/* Highlight Section */}

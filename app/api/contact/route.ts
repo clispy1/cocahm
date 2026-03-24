@@ -29,6 +29,13 @@ export async function POST(req: Request) {
       );
     }
 
+    if (!token) {
+      return NextResponse.json(
+        { message: 'Server configuration error: SANITY_API_WRITE_TOKEN is missing.' },
+        { status: 500 }
+      );
+    }
+
     const newMessage = {
       _type: 'contactMessage',
       name,

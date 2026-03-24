@@ -132,14 +132,15 @@ function EnrollmentForm() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit application');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.message || 'Failed to submit application');
       }
 
       setIsSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting form:', error);
-      alert('There was an error submitting your application. Please try again.');
+      alert(`There was an error submitting your application: ${error.message || 'Please try again.'}`);
     } finally {
       setIsSubmitting(false);
     }

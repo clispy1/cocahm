@@ -61,7 +61,8 @@ export default function Contact() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to send message');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.message || 'Failed to send message');
       }
 
       setIsSubmitted(true);
@@ -74,8 +75,8 @@ export default function Contact() {
       });
       
       setTimeout(() => setIsSubmitted(false), 5000);
-    } catch (err) {
-      setError('An error occurred while sending your message. Please try again later.');
+    } catch (err: any) {
+      setError(`An error occurred: ${err.message || 'Please try again later.'}`);
       console.error(err);
     } finally {
       setIsSubmitting(false);

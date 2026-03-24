@@ -33,6 +33,13 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!process.env.SANITY_API_WRITE_TOKEN) {
+      return NextResponse.json(
+        { message: 'Server configuration error: SANITY_API_WRITE_TOKEN is missing.' },
+        { status: 500 }
+      );
+    }
+
     // Upload passport picture to Sanity
     const imageAsset = await client.assets.upload('image', Buffer.from(passportPicture.split(',')[1], 'base64'), {
       filename: `passport-${firstName}-${surname}.jpg`,
@@ -127,10 +134,10 @@ export async function POST(request: Request) {
       { message: 'Enrollment submitted successfully', id: result._id },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error submitting enrollment:', error);
     return NextResponse.json(
-      { message: 'Failed to submit enrollment' },
+      { message: 'Failed to submit enrollment', error: error.message || String(error) },
       { status: 500 }
     );
   }
